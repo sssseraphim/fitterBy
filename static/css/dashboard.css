@@ -1,0 +1,198 @@
+/* Streak Board Styles */
+.streak-container {
+    margin-top: 1rem;
+}
+
+.streak-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 1rem;
+}
+
+.streak-day {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: #ebedf0;
+    transition: all 0.3s;
+}
+
+.streak-day.active {
+    background: #2ed573;
+}
+
+.streak-day.low {
+    background: #9be9a8;
+}
+
+.streak-day.medium {
+    background: #40c463;
+}
+
+.streak-day.high {
+    background: #30a14e;
+}
+
+.streak-day.max {
+    background: #216e39;
+}
+
+.streak-info {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.streak-badge {
+    background: linear-gradient(135deg, #ff6b35, #ff8e35);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Card Header */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-header h3 {
+    margin: 0;
+}
+
+/* Main Content Layout */
+.main-content-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick-actions-container {
+    margin-top: 1.5rem;
+}
+
+/* Workouts List */
+.workouts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.workout-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #ff6b35;
+}
+
+.workout-info h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+}
+
+.workout-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.workout-stats {
+    text-align: right;
+}
+
+.workout-date {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* Quick Actions Grid */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 2px solid #eaeaea;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background: #ff6b35;
+    color: white;
+    border-color: #ff6b35;
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    font-size: 1.5rem;
+}
+
+.action-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.empty-state p {
+    margin-bottom: 1rem;
+}
+
+/* Welcome Title */
+#welcome-title {
+    background: linear-gradient(135deg, #ff6b35, #ff8e35);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+    .main-content-area {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .streak-grid {
+        grid-template-columns: repeat(7, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .streak-grid {
+        gap: 2px;
+    }
+}

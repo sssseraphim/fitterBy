@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join FitterBy - Get Started Today</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h2>🚀 FitterBy</h2>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/trainers">Find Trainers</a>
+                <a href="/auth" class="btn btn-outline">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Section -->
+    <section class="auth-section">
+        <div class="auth-container">
+            <!-- Left Side - Branding -->
+            <div class="auth-branding">
+                <a href="/" class="back-home">
+                    ← Back to Home
+                </a>
+                <div class="branding-content">
+                    <h1>Join the <span class="highlight">FitterBy</span> Movement</h1>
+                    <p class="branding-subtitle">Where fitness meets opportunity. Transform your body or build your empire.</p>
+                    
+                    <div class="benefits">
+                        <div class="benefit">
+                            <div class="benefit-icon">💪</div>
+                            <div class="benefit-text">
+                                <h4>Real Results</h4>
+                                <p>Clients see 15lbs+ average weight loss</p>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <div class="benefit-icon">💰</div>
+                            <div class="benefit-text">
+                                <h4>Get Paid</h4>
+                                <p>Trainers earn $2,500+ monthly average</p>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <div class="benefit-icon">⚡</div>
+                            <div class="benefit-text">
+                                <h4>24/7 Access</h4>
+                                <p>Book and manage anytime, anywhere</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Forms -->
+            <div class="auth-forms">
+                <!-- Toggle Between Signup & Login -->
+                <div class="auth-toggle">
+                    <button class="toggle-btn active" data-form="signup">Sign Up</button>
+                    <button class="toggle-btn" data-form="login">Sign In</button>
+                </div>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form active">
+                    <div class="form-header">
+                        <h2>Start Your Journey</h2>
+                        <p>Join thousands transforming their lives</p>
+                    </div>
+
+                    <!-- User Type Selection -->
+                    <div class="user-type-selection">
+                        <label class="user-type-option">
+                            <input type="radio" name="userType" value="client" checked>
+                            <div class="option-card">
+                                <div class="option-icon">💪</div>
+                                <div class="option-text">
+                                    <h4>I'm a Client</h4>
+                                    <p>Looking for a trainer</p>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="user-type-option">
+                            <input type="radio" name="userType" value="trainer">
+                            <div class="option-card">
+                                <div class="option-icon">💰</div>
+                                <div class="option-text">
+                                    <h4>I'm a Trainer</h4>
+                                    <p>Ready to earn</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" name="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" placeholder="Create a password" required>
+                        <div class="password-strength">
+                            <div class="strength-bar"></div>
+                            <span class="strength-text">Password strength</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group trainer-fields" style="display: none;">
+                        <label for="trainer-specialty">Specialty</label>
+                        <select id="trainer-specialty" name="specialty">
+                            <option value="">Select your specialty</option>
+                            <option value="weight-loss">Weight Loss</option>
+                            <option value="bodybuilding">Bodybuilding</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="yoga">Yoga</option>
+                            <option value="crossfit">CrossFit</option>
+                            <option value="sports">Sports Training</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="terms" required>
+                            <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Create Account
+                    </button>
+
+                    <div class="auth-divider">
+                        <span>or continue with</span>
+                    </div>
+
+                    <div class="social-auth">
+                        <button type="button" class="btn btn-google">
+                            <span>Google</span>
+                        </button>
+                        <button type="button" class="btn btn-apple">
+                            <span>Apple</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-header">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to your FitterBy account</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                        <div class="forgot-password">
+                            <a href="#">Forgot password?</a>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Sign In
+                    </button>
+
+                    <div class="auth-divider">
+                        <span>or continue with</span>
+                    </div>
+
+                    <div class="social-auth">
+                        <button type="button" class="btn btn-google">
+                            <span>Google</span>
+                        </button>
+                        <button type="button" class="btn btn-apple">
+                            <span>Apple</span>
+                        </button>
+                    </div>
+
+                    <div class="auth-switch">
+                        <p>Don't have an account? <a href="#" class="switch-link" data-form="signup">Sign up</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script src="/static/js/auth.js"></script>
+</body>
+</html>

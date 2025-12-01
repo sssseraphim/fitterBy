@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FitterBy</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h2>🚀 FitterBy</h2>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard" class="active">Dashboard</a>
+                <a href="/trainers">Find Trainers</a>
+                <div class="user-menu">
+                    <span id="user-greeting">Welcome!</span>
+                    <div class="dropdown">
+                        <a href="/profile">Profile</a>
+                        <a href="/settings">Settings</a>
+                        <a href="#" id="logout-btn">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">
+                    💪
+                </div>
+                <div class="user-info">
+                    <h3 id="user-name">Loading...</h3>
+                    <span class="user-badge" id="user-type">client</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#overview" class="nav-item active" data-section="overview">
+                    <span class="nav-icon">📊</span>
+                    Overview
+                </a>
+                <a href="#sessions" class="nav-item" data-section="sessions">
+                    <span class="nav-icon">📅</span>
+                    My Sessions
+                </a>
+                <a href="#progress" class="nav-item" data-section="progress">
+                    <span class="nav-icon">📈</span>
+                    Progress
+                </a>
+                <a href="#workouts" class="nav-item" data-section="workouts">
+                    <span class="nav-icon">💪</span>
+                    Workouts
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Overview Section -->
+            <section id="overview" class="dashboard-section active">
+                <div class="section-header">
+                    <h1 id="welcome-title">Dashboard</h1>
+                    <p id="welcome-message">Welcome back! Here's your fitness journey at a glance.</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-info">
+                            <h3 id="sessions-count">0</h3>
+                            <p>Upcoming Sessions</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <h3 id="workouts-count">0</h3>
+                            <p>Workouts Completed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <h3 id="goals-count">0</h3>
+                            <p>Active Goals</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-info">
+                            <h3 id="streak-count">0</h3>
+                            <p>Day Streak</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="main-content-area">
+                    <!-- Streak Board (Like GitHub) -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>🔥 Activity Streak</h3>
+                            <span class="streak-badge" id="current-streak">0 days</span>
+                        </div>
+                        <div class="streak-container">
+                            <div class="streak-grid" id="streak-grid">
+                                <!-- Streak squares will be generated here -->
+                            </div>
+                            <div class="streak-info">
+                                <p>Stay consistent! Work out at least once every day to keep your streak alive.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Workouts -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>💪 Recent Workouts</h3>
+                            <button class="btn btn-small" onclick="logNewWorkout()">+ Log Workout</button>
+                        </div>
+                        <div class="workouts-list" id="recent-workouts">
+                            <!-- Workouts will be loaded here -->
+                            <div class="empty-state">
+                                <p>No workouts logged yet</p>
+                                <button class="btn btn-small" onclick="logNewWorkout()">Log Your First Workout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions-container">
+                    <div class="content-card">
+                        <h3>Quick Actions</h3>
+                        <div class="quick-actions-grid">
+                            <button class="action-btn" onclick="bookSession()">
+                                <span class="action-icon">📅</span>
+                                <span class="action-text">Book Session</span>
+                            </button>
+                            <button class="action-btn" onclick="logWorkout()">
+                                <span class="action-icon">💪</span>
+                                <span class="action-text">Log Workout</span>
+                            </button>
+                            <button class="action-btn" onclick="findTrainers()">
+                                <span class="action-icon">👨‍🏫</span>
+                                <span class="action-text">Find Trainers</span>
+                            </button>
+                            <button class="action-btn" onclick="setGoals()">
+                                <span class="action-icon">🎯</span>
+                                <span class="action-text">Set Goals</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections remain the same -->
+            <section id="sessions" class="dashboard-section">
+                <div class="section-header">
+                    <h1>My Sessions</h1>
+                    <p>Manage your training sessions and bookings</p>
+                </div>
+                <div class="content-card">
+                    <p>Sessions management coming soon!</p>
+                </div>
+            </section>
+
+            <section id="progress" class="dashboard-section">
+                <div class="section-header">
+                    <h1>Progress Tracking</h1>
+                    <p>Track your fitness journey and achievements</p>
+                </div>
+                <div class="content-card">
+                    <p>Progress tracking coming soon!</p>
+                </div>
+            </section>
+
+            <section id="workouts" class="dashboard-section">
+                <div class="section-header">
+                    <h1>Workout Library</h1>
+                    <p>Your saved workouts and exercises</p>
+                </div>
+                <div class="content-card">
+                    <p>Workout library coming soon!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
