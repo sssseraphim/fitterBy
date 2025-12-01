@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -55,6 +54,70 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const followUser = `-- name: FollowUser :exec
+INSERT INTO user_follows(follower_id, followed_id)
+VALUES (
+		$1,
+		$2
+		)
+`
+
+type FollowUserParams struct {
+	FollowerID uuid.UUID
+	FollowedID uuid.UUID
+}
+
+func (q *Queries) FollowUser(ctx context.Context, arg FollowUserParams) error {
+	_, err := q.db.ExecContext(ctx, followUser, arg.FollowerID, arg.FollowedID)
+	return err
+}
+
+const getFollowedUsers = `-- name: GetFollowedUsers :many
+SELECT users.id, users.name, users.created_at, users.updated_at, users.bio, users.premium
+FROM users
+INNER JOIN user_follows ON users.id = user_follows.followed_id
+WHERE user_follows.follower_id = $1
+`
+
+type GetFollowedUsersRow struct {
+	ID        uuid.UUID
+	Name      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Bio       string
+	Premium   bool
+}
+
+func (q *Queries) GetFollowedUsers(ctx context.Context, followerID uuid.UUID) ([]GetFollowedUsersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFollowedUsers, followerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFollowedUsersRow
+	for rows.Next() {
+		var i GetFollowedUsersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Bio,
+			&i.Premium,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUser = `-- name: GetUser :one
 SELECT id, created_at, updated_at, name, email, bio, premium
 FROM users
@@ -68,7 +131,7 @@ type GetUserRow struct {
 	Name      string
 	Email     string
 	Bio       string
-	Premium   sql.NullBool
+	Premium   bool
 }
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error) {
@@ -99,7 +162,7 @@ type GetUserLoginRow struct {
 	Name           string
 	Email          string
 	Bio            string
-	Premium        sql.NullBool
+	Premium        bool
 	HashedPassword string
 }
 

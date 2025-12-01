@@ -7,11 +7,32 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
+
+const commentOnPost = `-- name: CommentOnPost :exec
+INSERT INTO posts_comments(user_id, post_id, content)
+VALUES (
+		$1,
+		$2,
+		$3
+		)
+`
+
+type CommentOnPostParams struct {
+	UserID  uuid.UUID
+	PostID  uuid.UUID
+	Content string
+}
+
+func (q *Queries) CommentOnPost(ctx context.Context, arg CommentOnPostParams) error {
+	_, err := q.db.ExecContext(ctx, commentOnPost, arg.UserID, arg.PostID, arg.Content)
+	return err
+}
 
 const createPost = `-- name: CreatePost :one
 INSERT INTO posts(user_id, content, media_urls, visibility)
@@ -54,23 +75,27 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 }
 
 const getFollowedPosts = `-- name: GetFollowedPosts :many
-SELECT posts.id, users.id as author_id, users.name as author_name, posts.created_at, posts.visibility, posts.media_urls, posts.content
-FROM posts
+SELECT posts.id, users.id as author_id, users.name as author_name, posts.created_at, posts.visibility, posts.media_urls, posts.content,
+		(SELECT COUNT(*) FROM posts_likes where posts.id = posts_likes.post_id) as like_count,
+		(SELECT COUNT(*) FROM posts_comments where posts.id = posts_comments.post_id) as comments_count
+FROM posts 
 INNER JOIN user_follows ON posts.user_id = user_follows.followed_id
-INNER JOIN users ON post.user_id = users.id
+INNER JOIN users ON posts.user_id = users.id
 WHERE user_follows.follower_id = $1
 AND posts.visibility IN ('public', 'followers')
 ORDER BY posts.created_at DESC
 `
 
 type GetFollowedPostsRow struct {
-	ID         uuid.UUID
-	AuthorID   uuid.UUID
-	AuthorName string
-	CreatedAt  time.Time
-	Visibility string
-	MediaUrls  []string
-	Content    string
+	ID            uuid.UUID
+	AuthorID      uuid.UUID
+	AuthorName    string
+	CreatedAt     time.Time
+	Visibility    string
+	MediaUrls     []string
+	Content       string
+	LikeCount     int64
+	CommentsCount int64
 }
 
 func (q *Queries) GetFollowedPosts(ctx context.Context, followerID uuid.UUID) ([]GetFollowedPostsRow, error) {
@@ -90,6 +115,8 @@ func (q *Queries) GetFollowedPosts(ctx context.Context, followerID uuid.UUID) ([
 			&i.Visibility,
 			pq.Array(&i.MediaUrls),
 			&i.Content,
+			&i.LikeCount,
+			&i.CommentsCount,
 		); err != nil {
 			return nil, err
 		}
@@ -105,23 +132,105 @@ func (q *Queries) GetFollowedPosts(ctx context.Context, followerID uuid.UUID) ([
 }
 
 const getPost = `-- name: GetPost :one
-SELECT id, user_id, content, media_urls, visibility, like_count, comment_count, created_at, updated_at FROM posts
-WHERE id = $1
+SELECT posts.id, users.id as author_id, users.name as author_name, posts.created_at, posts.visibility, posts.media_urls, posts.content, 
+		(SELECT COUNT(*) FROM posts_likes where posts.id = posts_likes.post_id) as like_count,
+		(SELECT COUNT(*) FROM posts_comments where posts.id = posts_comments.post_id) as comments_count
+FROM posts
+LEFT JOIN users ON posts.user_id = users.id
+WHERE posts.id = $1
 `
 
-func (q *Queries) GetPost(ctx context.Context, id uuid.UUID) (Post, error) {
+type GetPostRow struct {
+	ID            uuid.UUID
+	AuthorID      uuid.NullUUID
+	AuthorName    sql.NullString
+	CreatedAt     time.Time
+	Visibility    string
+	MediaUrls     []string
+	Content       string
+	LikeCount     int64
+	CommentsCount int64
+}
+
+func (q *Queries) GetPost(ctx context.Context, id uuid.UUID) (GetPostRow, error) {
 	row := q.db.QueryRowContext(ctx, getPost, id)
-	var i Post
+	var i GetPostRow
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
-		&i.Content,
-		pq.Array(&i.MediaUrls),
-		&i.Visibility,
-		&i.LikeCount,
-		&i.CommentCount,
+		&i.AuthorID,
+		&i.AuthorName,
 		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.Visibility,
+		pq.Array(&i.MediaUrls),
+		&i.Content,
+		&i.LikeCount,
+		&i.CommentsCount,
 	)
 	return i, err
+}
+
+const getPostComments = `-- name: GetPostComments :many
+SELECT posts_comments.id, posts_comments.user_id, posts_comments.post_id, posts_comments.content, posts_comments.created_at, users.name as commenter_name
+FROM posts_comments
+LEFT JOIN users ON posts_comments.user_id = users.id
+WHERE posts_comments.post_id = $1
+ORDER BY posts_comments.created_at
+LIMIT 50
+`
+
+type GetPostCommentsRow struct {
+	ID            uuid.UUID
+	UserID        uuid.UUID
+	PostID        uuid.UUID
+	Content       string
+	CreatedAt     time.Time
+	CommenterName sql.NullString
+}
+
+func (q *Queries) GetPostComments(ctx context.Context, postID uuid.UUID) ([]GetPostCommentsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPostComments, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPostCommentsRow
+	for rows.Next() {
+		var i GetPostCommentsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.PostID,
+			&i.Content,
+			&i.CreatedAt,
+			&i.CommenterName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const likePost = `-- name: LikePost :exec
+INSERT INTO posts_likes(user_id, post_id)
+VALUES (
+		$1,
+		$2
+		)
+`
+
+type LikePostParams struct {
+	UserID uuid.UUID
+	PostID uuid.UUID
+}
+
+func (q *Queries) LikePost(ctx context.Context, arg LikePostParams) error {
+	_, err := q.db.ExecContext(ctx, likePost, arg.UserID, arg.PostID)
+	return err
 }

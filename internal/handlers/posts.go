@@ -17,14 +17,16 @@ type PostHandler struct {
 }
 
 type Post struct {
-	ID         uuid.UUID `json:"id"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	Content    string    `json:"content"`
-	AuthorId   uuid.UUID `json:"author_id"`
-	AuthorName string    `json:"author_name"`
-	MediaUrls  []string  `json:"media_urls"`
-	Visibility string    `json:"visibility"`
+	ID            uuid.UUID `json:"id"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	Content       string    `json:"content"`
+	AuthorId      uuid.UUID `json:"author_id"`
+	AuthorName    string    `json:"author_name"`
+	MediaUrls     []string  `json:"media_urls"`
+	Visibility    string    `json:"visibility"`
+	LikesCount    int       `json:"likes_count"`
+	CommentsCount int       `json:"comments_count"`
 }
 
 func (h *PostHandler) HandleCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +51,7 @@ func (h *PostHandler) HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "failed to create post", err)
 		return
 	}
-	respondWithJSON(w, 200, Post{
+	respondWithJSON(w, http.StatusCreated, Post{
 		ID:        post.ID,
 		CreatedAt: post.CreatedAt,
 		UpdatedAt: post.UpdatedAt,
@@ -82,42 +84,112 @@ func (h *PostHandler) HandleGetPost(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, "post is for followers only", errors.New("wrong post visibility"))
 		return
 	}
-	author, err := h.DB.GetUser(r.Context(), post.UserID)
+	author, err := h.DB.GetUser(r.Context(), post.AuthorID.UUID)
 	if err != nil {
 		respondWithError(w, 404, "no author found", err)
 		return
 	}
 
 	respondWithJSON(w, 200, Post{
-		ID:         post.ID,
-		CreatedAt:  post.CreatedAt,
-		Content:    post.Content,
-		MediaUrls:  post.MediaUrls,
-		AuthorId:   post.UserID,
-		AuthorName: author.Name,
+		ID:            post.ID,
+		CreatedAt:     post.CreatedAt,
+		Content:       post.Content,
+		MediaUrls:     post.MediaUrls,
+		AuthorId:      post.AuthorID.UUID,
+		AuthorName:    author.Name,
+		Visibility:    post.Visibility,
+		LikesCount:    int(post.LikeCount),
+		CommentsCount: int(post.CommentsCount),
 	})
 }
 
 func (h *PostHandler) HandleGetFollowedPosts(w http.ResponseWriter, r *http.Request) {
-	userId := uuid.MustParse(r.Context().Value(middleware.UserIDKey).(string))
+	userId := userIdFromContext(r)
 
 	posts, err := h.DB.GetFollowedPosts(r.Context(), userId)
 	if err != nil {
-		respondWithError(w, 404, "no posts found", err)
+		respondWithError(w, 404, fmt.Sprintf("failed to show posts: %v", err), err)
 		return
 	}
 	var resp struct {
 		Posts []Post `json:"posts"`
 	}
 	for _, p := range posts {
+		fmt.Print(p)
 		resp.Posts = append(resp.Posts, Post{
-			ID:         p.ID,
-			CreatedAt:  p.CreatedAt,
-			Content:    p.Content,
-			MediaUrls:  p.MediaUrls,
-			AuthorId:   p.AuthorID,
-			AuthorName: p.AuthorName,
+			ID:            p.ID,
+			CreatedAt:     p.CreatedAt,
+			Content:       p.Content,
+			MediaUrls:     p.MediaUrls,
+			AuthorId:      p.AuthorID,
+			AuthorName:    p.AuthorName,
+			Visibility:    p.Visibility,
+			LikesCount:    int(p.LikeCount),
+			CommentsCount: int(p.CommentsCount),
 		})
 	}
 	respondWithJSON(w, 200, resp)
+}
+
+func (h *PostHandler) HandlerLikePost(w http.ResponseWriter, r *http.Request) {
+	userId := userIdFromContext(r)
+	var req struct {
+		PostId uuid.UUID `json:"post_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, 400, "wrong request", err)
+		return
+	}
+	err := h.DB.LikePost(r.Context(), database.LikePostParams{
+		UserID: userId,
+		PostID: req.PostId,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusConflict, "failed to like", err)
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"success": "success"})
+}
+
+func userIdFromContext(r *http.Request) uuid.UUID {
+	return uuid.MustParse(r.Context().Value(middleware.UserIDKey).(string))
+}
+
+func (h *PostHandler) HandlerComment(w http.ResponseWriter, r *http.Request) {
+	userId := userIdFromContext(r)
+	var req struct {
+		PostId  uuid.UUID `json:"post_id"`
+		Content string    `json:"content"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, 400, "wrong request", err)
+		return
+	}
+	err := h.DB.CommentOnPost(r.Context(), database.CommentOnPostParams{
+		UserID:  userId,
+		PostID:  req.PostId,
+		Content: req.Content,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "failed to comment", err)
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"success": "success"})
+}
+
+func (h *PostHandler) HandlerGetComments(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		PostID uuid.UUID `json:"post_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, 400, "wrong request", err)
+		return
+	}
+	comments, err := h.DB.GetPostComments(r.Context(), req.PostID)
+	if err != nil {
+		respondWithError(w, 500, "failed to get comment", err)
+		return
+	}
+	respondWithJSON(w, 200, comments)
 }

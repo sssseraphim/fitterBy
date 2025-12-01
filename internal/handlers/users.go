@@ -51,7 +51,7 @@ func (h *UserHandler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: user.UpdatedAt,
 		Name:      user.Name,
 		Bio:       user.Bio,
-		Premium:   user.Premium.Bool,
+		Premium:   user.Premium,
 	})
 }
 
@@ -77,7 +77,7 @@ func (h *UserHandler) HandleGetCurrentUser(w http.ResponseWriter, r *http.Reques
 		Email:     user.Email,
 		Name:      user.Name,
 		Bio:       user.Bio,
-		Premium:   user.Premium.Bool,
+		Premium:   user.Premium,
 	})
 }
 
@@ -91,7 +91,7 @@ func (h *UserHandler) HandlerUpdateBio(w http.ResponseWriter, r *http.Request) {
 		Bio string `json:"bio"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		respondWithError(w, 400, "failed to decoder the bio", err)
+		respondWithError(w, 400, "failed to decode the bio", err)
 		return
 	}
 	err := h.DB.UpdateBio(r.Context(), database.UpdateBioParams{
@@ -102,4 +102,38 @@ func (h *UserHandler) HandlerUpdateBio(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, 200, request)
+}
+
+func (h *UserHandler) HandlerFollow(w http.ResponseWriter, r *http.Request) {
+	userIdString := r.Context().Value(middleware.UserIDKey).(string)
+	userId := uuid.MustParse(userIdString)
+
+	var request struct {
+		ID uuid.UUID `json:"user_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		respondWithError(w, 400, "failed to decode user", err)
+		return
+	}
+	err := h.DB.FollowUser(r.Context(), database.FollowUserParams{
+		FollowerID: userId,
+		FollowedID: request.ID,
+	})
+	if err != nil {
+		respondWithError(w, 500, fmt.Sprintf("failed to follow: %v", err), err)
+		return
+	}
+	respondWithJSON(w, 200, request)
+}
+
+func (h *UserHandler) HandlerGetFollowedUsers(w http.ResponseWriter, r *http.Request) {
+	fmt.Print("gettin followings..")
+	userIdString := r.Context().Value(middleware.UserIDKey).(string)
+	userId := uuid.MustParse(userIdString)
+	followedUsers, err := h.DB.GetFollowedUsers(r.Context(), userId)
+	if err != nil {
+		respondWithError(w, 500, fmt.Sprintf("failed to get follows: %v", err), err)
+		return
+	}
+	respondWithJSON(w, 200, followedUsers)
 }

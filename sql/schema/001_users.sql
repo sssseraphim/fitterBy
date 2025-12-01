@@ -7,7 +7,7 @@ name TEXT NOT NULL,
 email TEXT NOT NULL UNIQUE,
 bio TEXT NOT NULL,
 hashed_password TEXT NOT NULL,
-premium BOOLEAN DEFAULT false);
+premium BOOLEAN NOT NULL DEFAULT false);
 
 
 -- +goose Down

@@ -26,3 +26,16 @@ UPDATE users
 SET bio = $2,
 updated_at = Now()
 WHERE id = $1;
+
+-- name: FollowUser :exec
+INSERT INTO user_follows(follower_id, followed_id)
+VALUES (
+		$1,
+		$2
+		);
+
+-- name: GetFollowedUsers :many
+SELECT users.id, users.name, users.created_at, users.updated_at, users.bio, users.premium
+FROM users
+INNER JOIN user_follows ON users.id = user_follows.followed_id
+WHERE user_follows.follower_id = $1;

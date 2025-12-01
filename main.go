@@ -64,7 +64,8 @@ func main() {
 	mux.HandleFunc("GET /api/users/{user_id}", userHandler.HandleGetUser)
 	mux.Handle("GET /api/me", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(userHandler.HandleGetCurrentUser)))
 	mux.Handle("PATCH /api/me/bio", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(userHandler.HandlerUpdateBio)))
-
+	mux.Handle("POST /api/users/follow", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(userHandler.HandlerFollow)))
+	mux.Handle("GET /api/users/follow", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(userHandler.HandlerGetFollowedUsers)))
 	postHandler := &handlers.PostHandler{
 		DB: cfg.dbQueries,
 	}
@@ -72,7 +73,9 @@ func main() {
 	mux.HandleFunc("GET /api/posts/{post_id}", postHandler.HandleGetPost)
 	mux.Handle("GET /api/posts/followed", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(postHandler.HandleGetFollowedPosts)))
 	mux.Handle("POST /api/posts", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(postHandler.HandleCreatePost)))
-
+	mux.Handle("POST /api/posts/like", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(postHandler.HandlerLikePost)))
+	mux.Handle("POST /api/posts/comments", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(postHandler.HandlerComment)))
+	mux.HandleFunc("GET /api/posts/comments", postHandler.HandlerGetComments)
 	log.Println(" Servin from  http://localhost:8080/")
 
 	server := &http.Server{Handler: mux, Addr: ":8080"}

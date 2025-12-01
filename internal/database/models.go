@@ -25,10 +25,10 @@ type Post struct {
 
 type PostsComment struct {
 	ID        uuid.UUID
-	UserID    uuid.NullUUID
-	PostID    uuid.NullUUID
+	UserID    uuid.UUID
+	PostID    uuid.UUID
 	Content   string
-	CreatedAt sql.NullTime
+	CreatedAt time.Time
 }
 
 type PostsLike struct {
@@ -53,7 +53,7 @@ type User struct {
 	Email          string
 	Bio            string
 	HashedPassword string
-	Premium        sql.NullBool
+	Premium        bool
 }
 
 type UserFollow struct {
