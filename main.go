@@ -66,10 +66,11 @@ func main() {
 	mux.Handle("PATCH /api/me/bio", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(userHandler.HandlerUpdateBio)))
 	mux.Handle("POST /api/users/follow", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(userHandler.HandlerFollow)))
 	mux.Handle("GET /api/users/follow", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(userHandler.HandlerGetFollowedUsers)))
+
 	postHandler := &handlers.PostHandler{
 		DB: cfg.dbQueries,
 	}
-	// Posts endpoint
+	// Posts endpoints
 	mux.HandleFunc("GET /api/posts/{post_id}", postHandler.HandleGetPost)
 	mux.Handle("GET /api/posts/followed", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(postHandler.HandleGetFollowedPosts)))
 	mux.Handle("POST /api/posts", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(postHandler.HandleCreatePost)))
@@ -77,6 +78,17 @@ func main() {
 	mux.Handle("POST /api/posts/comments", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(postHandler.HandlerComment)))
 	mux.HandleFunc("GET /api/posts/comments", postHandler.HandlerGetComments)
 	log.Println(" Servin from  http://localhost:8080/")
+
+	programHandler := &handlers.ProgramHandler{
+		DB: cfg.dbQueries,
+	}
+	// Programs endpoints
+	mux.Handle("POST /api/exercises", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(programHandler.HandleCreateExercise)))
+	mux.HandleFunc("GET /api/exercises", programHandler.HandlerGetExercises)
+	mux.HandleFunc("GET /api/exercises/{exercise_id}", programHandler.HandlerGetExerciseById)
+	mux.Handle("POST /api/programs", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(programHandler.HandlerCreateProgram)))
+	mux.HandleFunc("GET /api/programs", programHandler.HandleGetPrograms)
+	mux.HandleFunc("GET /api/programs/{program_id}", programHandler.HandleGetProgram)
 
 	server := &http.Server{Handler: mux, Addr: ":8080"}
 	err = server.ListenAndServe()

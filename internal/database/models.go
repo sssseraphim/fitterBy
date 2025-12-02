@@ -11,6 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type Exercise struct {
+	ID          uuid.UUID
+	Name        string
+	UserID      uuid.UUID
+	Description string
+	MediaUrls   []string
+	CreatedAt   time.Time
+}
+
 type Post struct {
 	ID           uuid.UUID
 	UserID       uuid.UUID
@@ -35,6 +44,37 @@ type PostsLike struct {
 	UserID    uuid.UUID
 	PostID    uuid.UUID
 	CreatedAt sql.NullTime
+}
+
+type Program struct {
+	ID          uuid.UUID
+	Name        string
+	UserID      uuid.UUID
+	Description string
+	MediaUrls   []string
+	Visibility  string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type ProgramDay struct {
+	ID          uuid.UUID
+	ProgramID   uuid.UUID
+	Name        string
+	Description string
+	DayOrder    int32
+	CreatedAt   sql.NullTime
+}
+
+type ProgramLift struct {
+	ID           uuid.UUID
+	ProgramDayID uuid.UUID
+	ExerciseID   uuid.UUID
+	Description  string
+	LiftOrder    int32
+	Sets         int32
+	Reps         int32
+	CreatedAt    sql.NullTime
 }
 
 type RefreshToken struct {

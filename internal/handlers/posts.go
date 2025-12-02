@@ -64,7 +64,6 @@ func (h *PostHandler) HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 func (h *PostHandler) HandleGetPost(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("handle post by id")
 	postIdString := r.PathValue("post_id")
-	fmt.Println(postIdString)
 	if postIdString == "" {
 		respondWithError(w, 400, "post id required", errors.New("no id"))
 		return
