@@ -101,3 +101,31 @@ type UserFollow struct {
 	FollowedID uuid.UUID
 	CreatedAt  sql.NullTime
 }
+
+type UsersLift struct {
+	ID         uuid.UUID
+	UserID     uuid.UUID
+	ExerciseID uuid.UUID
+	WorkoutID  uuid.UUID
+	CreatedAt  sql.NullTime
+	Weight     int32
+	Sets       int32
+	Reps       int32
+	LiftOrder  int32
+}
+
+type UsersProgram struct {
+	ID              uuid.UUID
+	UserID          uuid.UUID
+	ProgramID       uuid.UUID
+	CreatedAt       sql.NullTime
+	CurrentDayOrder sql.NullInt32
+	Status          sql.NullString
+}
+
+type Workout struct {
+	ID           uuid.UUID
+	UserID       uuid.UUID
+	ProgramDayID uuid.UUID
+	CreatedAt    sql.NullTime
+}

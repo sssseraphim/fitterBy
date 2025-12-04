@@ -84,11 +84,21 @@ func main() {
 	}
 	// Programs endpoints
 	mux.Handle("POST /api/exercises", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(programHandler.HandleCreateExercise)))
-	mux.HandleFunc("GET /api/exercises", programHandler.HandlerGetExercises)
-	mux.HandleFunc("GET /api/exercises/{exercise_id}", programHandler.HandlerGetExerciseById)
-	mux.Handle("POST /api/programs", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(programHandler.HandlerCreateProgram)))
+	mux.HandleFunc("GET /api/exercises", programHandler.HandleGetExercises)
+	mux.HandleFunc("GET /api/exercises/{exercise_id}", programHandler.HandleGetExerciseById)
+	mux.Handle("POST /api/programs", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(programHandler.HandleCreateProgram)))
 	mux.HandleFunc("GET /api/programs", programHandler.HandleGetPrograms)
 	mux.HandleFunc("GET /api/programs/{program_id}", programHandler.HandleGetProgram)
+	mux.Handle("POST /api/programs/{program_id}/subscribe", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(programHandler.HandleSubscribeToProgram)))
+	mux.Handle("GET /api/users/me/programs", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(programHandler.HandleGetSubscribedPrograms)))
+
+	workoutHandler := &handlers.WorkoutHandler{
+		DB: cfg.dbQueries,
+	}
+	// Workouts endpoints
+	mux.Handle("POST /api/workouts", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(workoutHandler.HandleCreateWorkout)))
+	mux.Handle("GET /api/users/me/workouts", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(workoutHandler.HandleGetMyWorkouts)))
+	mux.Handle("GET /api/workouts/{workout_id}", middleware.AuthMiddleware(jwtConfig)(http.HandlerFunc(workoutHandler.HandleGetWorkout)))
 
 	server := &http.Server{Handler: mux, Addr: ":8080"}
 	err = server.ListenAndServe()

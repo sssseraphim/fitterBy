@@ -59,3 +59,15 @@ LEFT JOIN exercises e ON p.exercise_id = e.id
 WHERE program_day_id = $1
 ORDER BY lift_order ASC;
 
+-- name: GetUserSubscribedPrograms :many
+SELECT * FROM users_programs
+WHERE user_id = $1;
+
+-- name: SubscribeToProgram :exec
+INSERT INTO users_programs(
+		user_id,
+		program_id
+) VALUES (
+		$1,
+		$2
+		);

@@ -35,10 +35,11 @@ type Lift struct {
 }
 
 type Day struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Lifts       []Lift `json:"lifts"`
-	Order       int    `json:"order"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Lifts       []Lift    `json:"lifts"`
+	Order       int       `json:"order"`
 }
 
 type Program struct {
@@ -52,6 +53,14 @@ type Program struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 	Visibility  string    `json:"visibility"`
 	Days        []Day     `json:"days"`
+}
+
+type UserProgram struct {
+	ID         uuid.UUID `json:"id"`
+	ProgramID  uuid.UUID `json:"program_id"`
+	CreatedAt  time.Time `json:"created_at"`
+	CurrentDay int       `json:"current_day"`
+	Status     string    `json:"status"`
 }
 
 func (h *ProgramHandler) HandleCreateExercise(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +94,7 @@ func (h *ProgramHandler) HandleCreateExercise(w http.ResponseWriter, r *http.Req
 	})
 }
 
-func (h *ProgramHandler) HandlerGetExerciseById(w http.ResponseWriter, r *http.Request) {
+func (h *ProgramHandler) HandleGetExerciseById(w http.ResponseWriter, r *http.Request) {
 	exerciseIdString := r.PathValue("exercise_id")
 	if exerciseIdString == "" {
 		respondWithError(w, 400, "post id required", errors.New("no id"))
@@ -113,7 +122,7 @@ func (h *ProgramHandler) HandlerGetExerciseById(w http.ResponseWriter, r *http.R
 	})
 }
 
-func (h *ProgramHandler) HandlerGetExercises(w http.ResponseWriter, r *http.Request) {
+func (h *ProgramHandler) HandleGetExercises(w http.ResponseWriter, r *http.Request) {
 	var response struct {
 		Exercises []Exercise `json:"exercises"`
 	}
@@ -136,7 +145,7 @@ func (h *ProgramHandler) HandlerGetExercises(w http.ResponseWriter, r *http.Requ
 	respondWithJSON(w, http.StatusOK, response)
 }
 
-func (h *ProgramHandler) HandlerCreateProgram(w http.ResponseWriter, r *http.Request) {
+func (h *ProgramHandler) HandleCreateProgram(w http.ResponseWriter, r *http.Request) {
 	userId := userIdFromContext(r)
 	var req Program
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -240,6 +249,7 @@ func (h *ProgramHandler) HandleGetProgram(w http.ResponseWriter, r *http.Request
 	}
 	for _, d := range days {
 		respDay := Day{
+			ID:          d.ID,
 			Name:        d.Name,
 			Description: d.Description,
 			Order:       int(d.DayOrder),
@@ -262,4 +272,48 @@ func (h *ProgramHandler) HandleGetProgram(w http.ResponseWriter, r *http.Request
 	}
 	respondWithJSON(w, 200, resp)
 
+}
+
+func (h *ProgramHandler) HandleSubscribeToProgram(w http.ResponseWriter, r *http.Request) {
+	userId := userIdFromContext(r)
+	programIdString := r.PathValue("program_id")
+	if programIdString == "" {
+		respondWithError(w, 400, "program id required", errors.New("no id"))
+		return
+	}
+	programId, err := uuid.Parse(programIdString)
+	if err != nil {
+		respondWithError(w, 400, "wrong program id", err)
+		return
+	}
+	err = h.DB.SubscribeToProgram(r.Context(), database.SubscribeToProgramParams{
+		UserID:    userId,
+		ProgramID: programId})
+	if err != nil {
+		respondWithError(w, 404, "failed to subscribe", err)
+		return
+	}
+	respondWithJSON(w, 200, map[string]string{"success": "success"})
+}
+
+func (h *ProgramHandler) HandleGetSubscribedPrograms(w http.ResponseWriter, r *http.Request) {
+	userId := userIdFromContext(r)
+	programs, err := h.DB.GetUserSubscribedPrograms(r.Context(), userId)
+	if err != nil {
+		respondWithError(w, 500, "failed to get programs", err)
+		return
+	}
+	var resp struct {
+		UserPrograms []UserProgram `json:"user_programs"`
+	}
+	for _, p := range programs {
+		resp.UserPrograms = append(resp.UserPrograms, UserProgram{
+			ID:         p.ID,
+			ProgramID:  p.ProgramID,
+			CreatedAt:  p.CreatedAt.Time,
+			CurrentDay: int(p.CurrentDayOrder.Int32),
+			Status:     p.Status.String,
+		})
+	}
+	respondWithJSON(w, 200, resp)
 }

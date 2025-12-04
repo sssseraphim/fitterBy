@@ -304,3 +304,58 @@ func (q *Queries) GetPrograms(ctx context.Context) ([]GetProgramsRow, error) {
 	}
 	return items, nil
 }
+
+const getUserSubscribedPrograms = `-- name: GetUserSubscribedPrograms :many
+SELECT id, user_id, program_id, created_at, current_day_order, status FROM users_programs
+WHERE user_id = $1
+`
+
+func (q *Queries) GetUserSubscribedPrograms(ctx context.Context, userID uuid.UUID) ([]UsersProgram, error) {
+	rows, err := q.db.QueryContext(ctx, getUserSubscribedPrograms, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UsersProgram
+	for rows.Next() {
+		var i UsersProgram
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.ProgramID,
+			&i.CreatedAt,
+			&i.CurrentDayOrder,
+			&i.Status,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const subscribeToProgram = `-- name: SubscribeToProgram :exec
+INSERT INTO users_programs(
+		user_id,
+		program_id
+) VALUES (
+		$1,
+		$2
+		)
+`
+
+type SubscribeToProgramParams struct {
+	UserID    uuid.UUID
+	ProgramID uuid.UUID
+}
+
+func (q *Queries) SubscribeToProgram(ctx context.Context, arg SubscribeToProgramParams) error {
+	_, err := q.db.ExecContext(ctx, subscribeToProgram, arg.UserID, arg.ProgramID)
+	return err
+}
