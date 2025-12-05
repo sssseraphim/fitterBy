@@ -57,6 +57,7 @@ type Program struct {
 
 type UserProgram struct {
 	ID         uuid.UUID `json:"id"`
+	Name       string    `json:"name"`
 	ProgramID  uuid.UUID `json:"program_id"`
 	CreatedAt  time.Time `json:"created_at"`
 	CurrentDay int       `json:"current_day"`
@@ -148,6 +149,7 @@ func (h *ProgramHandler) HandleGetExercises(w http.ResponseWriter, r *http.Reque
 func (h *ProgramHandler) HandleCreateProgram(w http.ResponseWriter, r *http.Request) {
 	userId := userIdFromContext(r)
 	var req Program
+	fmt.Print(r.Body)
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("bad request: %v", err), err)
 		return
@@ -198,9 +200,11 @@ func (h *ProgramHandler) HandleGetPrograms(w http.ResponseWriter, r *http.Reques
 		respondWithError(w, 500, "failed to get programs", err)
 		return
 	}
-	var resp []Program
+	var resp struct {
+		Programs []Program `json:"programs"`
+	}
 	for _, p := range programs {
-		resp = append(resp, Program{
+		resp.Programs = append(resp.Programs, Program{
 			ID:          p.ID,
 			UserId:      p.UserID,
 			Name:        p.Name,
@@ -290,7 +294,7 @@ func (h *ProgramHandler) HandleSubscribeToProgram(w http.ResponseWriter, r *http
 		UserID:    userId,
 		ProgramID: programId})
 	if err != nil {
-		respondWithError(w, 404, "failed to subscribe", err)
+		respondWithError(w, 404, fmt.Sprintf("failed to subscribe: %v", err), err)
 		return
 	}
 	respondWithJSON(w, 200, map[string]string{"success": "success"})
@@ -304,11 +308,12 @@ func (h *ProgramHandler) HandleGetSubscribedPrograms(w http.ResponseWriter, r *h
 		return
 	}
 	var resp struct {
-		UserPrograms []UserProgram `json:"user_programs"`
+		Programs []UserProgram `json:"programs"`
 	}
 	for _, p := range programs {
-		resp.UserPrograms = append(resp.UserPrograms, UserProgram{
+		resp.Programs = append(resp.Programs, UserProgram{
 			ID:         p.ID,
+			Name:       p.Name.String,
 			ProgramID:  p.ProgramID,
 			CreatedAt:  p.CreatedAt.Time,
 			CurrentDay: int(p.CurrentDayOrder.Int32),

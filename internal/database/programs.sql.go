@@ -306,19 +306,31 @@ func (q *Queries) GetPrograms(ctx context.Context) ([]GetProgramsRow, error) {
 }
 
 const getUserSubscribedPrograms = `-- name: GetUserSubscribedPrograms :many
-SELECT id, user_id, program_id, created_at, current_day_order, status FROM users_programs
-WHERE user_id = $1
+SELECT users_programs.id, users_programs.user_id, users_programs.program_id, users_programs.created_at, users_programs.current_day_order, users_programs.status, programs.name
+FROM users_programs
+LEFT JOIN programs ON users_programs.program_id = programs.id
+WHERE users_programs.user_id = $1
 `
 
-func (q *Queries) GetUserSubscribedPrograms(ctx context.Context, userID uuid.UUID) ([]UsersProgram, error) {
+type GetUserSubscribedProgramsRow struct {
+	ID              uuid.UUID
+	UserID          uuid.UUID
+	ProgramID       uuid.UUID
+	CreatedAt       sql.NullTime
+	CurrentDayOrder sql.NullInt32
+	Status          sql.NullString
+	Name            sql.NullString
+}
+
+func (q *Queries) GetUserSubscribedPrograms(ctx context.Context, userID uuid.UUID) ([]GetUserSubscribedProgramsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getUserSubscribedPrograms, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []UsersProgram
+	var items []GetUserSubscribedProgramsRow
 	for rows.Next() {
-		var i UsersProgram
+		var i GetUserSubscribedProgramsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
@@ -326,6 +338,7 @@ func (q *Queries) GetUserSubscribedPrograms(ctx context.Context, userID uuid.UUI
 			&i.CreatedAt,
 			&i.CurrentDayOrder,
 			&i.Status,
+			&i.Name,
 		); err != nil {
 			return nil, err
 		}

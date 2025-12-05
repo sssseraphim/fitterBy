@@ -50,8 +50,7 @@ func main() {
 	}
 	mux := http.NewServeMux()
 	// Serve static files (CSS, JS, images)
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	mux.HandleFunc("/", serveTemplate("index.html"))
 
 	// Auth endpoints
 	mux.HandleFunc("POST /api/auth/signup", authHandler.HandleSignup)
@@ -121,37 +120,4 @@ func serveTemplate(templateName string) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/html")
 		w.Write(htmlBytes)
 	}
-}
-
-// serveTrainerProfile handles dynamic trainer profile pages
-func serveTrainerProfile(w http.ResponseWriter, r *http.Request) {
-	// For now, serve a generic trainer profile template
-	// Later we'll fetch actual trainer data
-	htmlPath := filepath.Join("static", "templates", "trainer-single.html")
-
-	htmlBytes, err := os.ReadFile(htmlPath)
-	if err != nil {
-		http.Error(w, "Trainer not found", http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html")
-	w.Write(htmlBytes)
-}
-
-// API handlers (will implement functionality later)
-func apiTrainersHandler(w http.ResponseWriter, r *http.Request) {
-	// Return mock data for frontend development
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"trainers": [], "message": "API coming soon!"}`)
-}
-
-func apiSignupHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"message": "Signup API coming soon!"}`)
-}
-
-func apiLoginHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"message": "Login API coming soon!"}`)
 }

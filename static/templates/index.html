@@ -3,150 +3,1411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitterBy - Get Paid to Get Fit</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>GymBro - Fitness Social Network</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #authStatus {
+            font-weight: 500;
+        }
+
+        #logoutBtn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        #logoutBtn:hover {
+            background: #c53030;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #edf2f7;
+            border: none;
+            border-radius: 5px;
+            text-align: left;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #cbd5e0;
+            transform: translateX(5px);
+        }
+
+        .nav-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #edf2f7;
+        }
+
+        h3 {
+            color: #4a5568;
+            margin: 15px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button:not(.nav-button):not(#logoutBtn) {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        button:hover:not(.nav-button):not(#logoutBtn) {
+            background: #5a67d8;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .message.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+            display: block;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+            display: block;
+        }
+
+        .list-item {
+            background: #f7fafc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .list-item h4 {
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+
+        .list-item p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        .like-btn {
+            background: #f56565;
+        }
+
+        .comment-btn {
+            background: #4299e1;
+        }
+    </style>
 </head>
 <body>
-    <!-- NAVIGATION - Clean & Professional -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>🚀 FitterBy</h2>
+    <div class="container">
+        <header>
+            <div class="logo">🏋🏾‍♂️ GymBro</div>
+            <div class="user-info">
+                <span id="authStatus">Not logged in</span>
+                <button id="logoutBtn">Logout</button>
             </div>
-            <div class="nav-links">
-                <a href="#features">Why Us</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="/auth" class="btn btn-outline">Get Started</a>
-            </div>
-        </div>
-    </nav>
+        </header>
 
-    <!-- HERO SECTION - Money-Making Vibe -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Get <span class="highlight">FitterBy</span> Getting <span class="money">Paid</span></h1>
-            <p class="hero-subtitle">The platform where trainers stack paper while clients stack gains. Everyone wins.</p>
-            <div class="hero-buttons">
-                <a href="/auth?type=client" class="btn btn-primary">
-                    💪 Find My Trainer
-                </a>
-                <a href="/auth?type=trainer" class="btn btn-secondary">
-                    💰 Start Earning
-                </a>
+        <div class="main-content">
+            <div class="sidebar">
+                <button class="nav-button active" data-section="auth">🔐 Auth</button>
+                <button class="nav-button" data-section="profile">👤 Profile</button>
+                <button class="nav-button" data-section="posts">📝 Posts</button>
+                <button class="nav-button" data-section="exercises">💪 Exercises</button>
+                <button class="nav-button" data-section="programs">📋 Programs</button>
+                <button class="nav-button" data-section="workouts">🏋️ Workouts</button>
             </div>
-            <div class="hero-stats">
-                <div class="stat">
-                    <div class="stat-number">$2,500+</div>
-                    <div class="stat-label">Avg Trainer Monthly</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">15lbs+</div>
-                    <div class="stat-label">Avg Client Weight Loss</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Booking & Support</div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- FEATURES - Show Them The Value -->
-    <section id="features" class="features">
-        <div class="container">
-            <h2>Why FitterBy Prints Money</h2>
-            <div class="features-grid">
-                <!-- For Clients -->
-                <div class="feature-card client-card">
-                    <div class="feature-header">
-                        <div class="feature-icon">💪</div>
-                        <h3>For Clients</h3>
+            <div class="content-area">
+                <!-- Auth Section -->
+                <div id="auth" class="section active">
+                    <h2>Authentication</h2>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="authEmail" placeholder="user@example.com">
                     </div>
-                    <ul class="feature-list">
-                        <li>✅ Find elite trainers in your hood</li>
-                        <li>✅ Transparent pricing - no surprises</li>
-                        <li>✅ Track progress with real analytics</li>
-                        <li>✅ Flexible scheduling that works for you</li>
-                    </ul>
-                    <a href="/auth?type=client" class="btn btn-small">Start Transforming</a>
-                </div>
-
-                <!-- For Trainers -->
-                <div class="feature-card trainer-card">
-                    <div class="feature-header">
-                        <div class="feature-icon">💰</div>
-                        <h3>For Trainers</h3>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="authPassword" placeholder="securepassword123">
                     </div>
-                    <ul class="feature-list">
-                        <li>✅ Get paid directly - keep 85%+</li>
-                        <li>✅ Built-in client management</li>
-                        <li>✅ Automated scheduling & reminders</li>
-                        <li>✅ Grow your brand in the community</li>
-                    </ul>
-                    <a href="/auth?type=trainer" class="btn btn-small">Start Earning</a>
+                    <div class="form-group">
+                        <label>Name (for signup):</label>
+                        <input type="text" id="authName" placeholder="John Doe">
+                    </div>
+                    <div class="actions">
+                        <button id="loginBtn">Login</button>
+                        <button id="signupBtn">Sign Up</button>
+                    </div>
+                    <div id="authMessage" class="message"></div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile" class="section">
+                    <h2>My Profile</h2>
+                    <div id="profileInfo"></div>
+                    <h3>Update Bio</h3>
+                    <div class="form-group">
+                        <textarea id="bioText" placeholder="Just a guy trying to get huge..."></textarea>
+                    </div>
+                    <button id="updateBioBtn">Update Bio</button>
+                    <div id="profileMessage" class="message"></div>
+                    
+                    <h3>Follow User</h3>
+                    <div class="form-group">
+                        <input type="text" id="followUserId" placeholder="Enter user UUID to follow">
+                    </div>
+                    <button id="followBtn">Follow User</button>
+                    
+                    <h3>Following</h3>
+                    <div id="followingList"></div>
+                </div>
+
+                <!-- Posts Section -->
+                <div id="posts" class="section">
+                    <h2>Posts</h2>
+                    <h3>Create Post</h3>
+                    <div class="form-group">
+                        <textarea id="postContent" placeholder="Just hit a new PR! 225lbs bench! 🏋🏾‍♂️"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="postMedia" placeholder="Media URL (optional)">
+                    </div>
+                    <button id="createPostBtn">Create Post</button>
+                    
+                    <h3>Posts from Following</h3>
+                    <div id="postsList"></div>
+                </div>
+
+                <!-- Exercises Section -->
+                <div id="exercises" class="section">
+                    <h2>Exercises</h2>
+                    <h3>Create Exercise</h3>
+                    <div class="form-group">
+                        <input type="text" id="exerciseName" placeholder="Barbell Bench Press">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="exerciseDesc" placeholder="Flat bench press with barbell"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="exerciseMedia" placeholder="Media URL (optional)">
+                    </div>
+                    <button id="createExerciseBtn">Create Exercise</button>
+                    
+                    <h3>All Exercises</h3>
+                    <div id="exercisesList"></div>
+                </div>
+
+
+						<!-- Programs Section -->
+						<div id="programs" class="section">
+					<h2>Programs</h2>
+			
+					<!-- Create Program Form -->
+					<h3>Create Program</h3>
+					<div class="form-group">
+						<input type="text" id="programName" placeholder="Program Name">
+					</div>
+					<div class="form-group">
+						<textarea id="programDesc" placeholder="Program Description"></textarea>
+					</div>
+					<div class="form-group">
+						<select id="programVisibility">
+							<option value="public">Public</option>
+							<option value="private">Private</option>
+							<option value="followers">Followers Only</option>
+						</select>
+					</div>
+					
+					<!-- Days Container -->
+					<h4>Days</h4>
+					<div id="daysContainer">
+						<!-- Days will be added here dynamically -->
+					</div>
+					<button type="button" onclick="addDay()" style="margin: 10px 0;">
+						➕ Add Day
+					</button>
+					
+					<button id="createProgramBtn">Create Program</button>
+					
+					<!-- Existing programs display -->
+					<h3>All Programs</h3>
+					<div id="programsList"></div>
+					
+					<h3>My Subscribed Programs</h3>
+					<div id="myProgramsList"></div>
+				</div>
+
+                <!-- Workouts Section -->
+                <div id="workouts" class="section">
+                    <h2>Workouts</h2>
+                    <h3>Log Workout</h3>
+                    <div class="form-group">
+                        <input type="text" id="workoutProgramId" placeholder="Program ID">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="workoutDayId" placeholder="Program Day ID">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="workoutExerciseId" placeholder="Exercise ID">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="workoutWeight" placeholder="Weight">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="workoutSets" placeholder="Sets">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="workoutReps" placeholder="Reps">
+                    </div>
+                    <button id="createWorkoutBtn">Log Workout</button>
+                    
+                    <h3>My Workouts</h3>
+                    <div id="workoutsList"></div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- HOW IT WORKS - Simple Steps -->
-    <section id="how-it-works" class="how-it-works">
-        <div class="container">
-            <h2>Get Started in 3 Simple Steps</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Sign Up Free</h3>
-                    <p>Create your profile in 2 minutes. No credit card required.</p>
+    <script>
+        const BASE_URL = 'http://localhost:8080/api';
+        let currentToken = localStorage.getItem('gymbro_token');
+        let currentUserId = localStorage.getItem('gymbro_user_id');
+        let currentUserName = localStorage.getItem('gymbro_user_name');
+
+        // DOM Elements
+        const authStatus = document.getElementById('authStatus');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const navButtons = document.querySelectorAll('.nav-button');
+        const sections = document.querySelectorAll('.section');
+
+        // Update UI based on auth state
+        function updateAuthUI() {
+            if (currentToken) {
+                authStatus.textContent = `Logged in as ${currentUserName}`;
+                logoutBtn.style.display = 'block';
+            } else {
+                authStatus.textContent = 'Not logged in';
+                logoutBtn.style.display = 'none';
+            }
+        }
+
+        // Navigation
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const sectionId = button.dataset.section;
+                
+                // Update active button
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Show selected section
+                sections.forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('gymbro_token');
+            localStorage.removeItem('gymbro_user_id');
+            localStorage.removeItem('gymbro_user_name');
+            currentToken = null;
+            currentUserId = null;
+            currentUserName = null;
+            updateAuthUI();
+            showMessage('authMessage', 'Logged out successfully', 'success');
+        });
+
+        // API Helper Functions
+        async function apiRequest(endpoint, options = {}) {
+            const url = `${BASE_URL}${endpoint}`;
+            const headers = {
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+
+            if (currentToken && !endpoint.includes('/auth/')) {
+                headers['Authorization'] = `Bearer ${currentToken}`;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                }
+
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        function showMessage(elementId, message, type = 'error') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `message ${type}`;
+            setTimeout(() => {
+                element.className = 'message';
+            }, 5000);
+        }
+
+        // Auth Functions
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            try {
+                const data = await apiRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                currentToken = data.TokenResoponse.access_token;
+                currentUserId = data.id;
+                currentUserName = data.name;
+
+                localStorage.setItem('gymbro_token', currentToken);
+                localStorage.setItem('gymbro_user_id', currentUserId);
+                localStorage.setItem('gymbro_user_name', currentUserName);
+
+                updateAuthUI();
+                showMessage('authMessage', 'Login successful!', 'success');
+            } catch (error) {
+                showMessage('authMessage', `Login failed: ${error.message}`, 'error');
+            }
+        });
+
+        document.getElementById('signupBtn').addEventListener('click', async () => {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value;
+
+            try {
+                await apiRequest('/auth/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password, name })
+                });
+
+                showMessage('authMessage', 'Signup successful! Please login.', 'success');
+            } catch (error) {
+                showMessage('authMessage', `Signup failed: ${error.message}`, 'error');
+            }
+        });
+
+        // Profile Functions
+        async function loadProfile() {
+            if (!currentToken) {
+                showMessage('profileMessage', 'Please login first', 'error');
+                return;
+            }
+
+            try {
+                const data = await apiRequest('/me');
+                document.getElementById('profileInfo').innerHTML = `
+                    <div class="list-item">
+                        <h4>${data.name}</h4>
+                        <p>${data.email}</p>
+                        <p><strong>Bio:</strong> ${data.bio || 'No bio yet'}</p>
+                    </div>
+                `;
+                
+                if (data.bio) {
+                    document.getElementById('bioText').value = data.bio;
+                }
+            } catch (error) {
+                showMessage('profileMessage', `Failed to load profile: ${error.message}`, 'error');
+            }
+        }
+
+        document.getElementById('updateBioBtn').addEventListener('click', async () => {
+            const bio = document.getElementById('bioText').value;
+
+            try {
+                await apiRequest('/me/bio', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ bio })
+                });
+
+                showMessage('profileMessage', 'Bio updated successfully!', 'success');
+                loadProfile();
+            } catch (error) {
+                showMessage('profileMessage', `Failed to update bio: ${error.message}`, 'error');
+            }
+        });
+
+        document.getElementById('followBtn').addEventListener('click', async () => {
+            const userId = document.getElementById('followUserId').value;
+
+            try {
+                await apiRequest('/users/follow', {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: userId })
+                });
+
+                showMessage('profileMessage', 'User followed successfully!', 'success');
+                loadFollowing();
+            } catch (error) {
+                showMessage('profileMessage', `Failed to follow user: ${error.message}`, 'error');
+            }
+        });
+
+        async function loadFollowing() {
+            try {
+                const data = await apiRequest('/users/follow');
+                const list = document.getElementById('followingList');
+                list.innerHTML = '';
+
+                data.forEach(user => {
+                    list.innerHTML += `
+                        <div class="list-item">
+                            <h4>${user.name}</h4>
+                            <p>${user.email}</p>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to load following:', error);
+            }
+        }
+
+        // Posts Functions
+        document.getElementById('createPostBtn').addEventListener('click', async () => {
+            const content = document.getElementById('postContent').value;
+            const mediaUrls = document.getElementById('postMedia').value ? 
+                [document.getElementById('postMedia').value] : [];
+
+            try {
+                await apiRequest('/posts', {
+                    method: 'POST',
+                    body: JSON.stringify({ content, media_urls: mediaUrls })
+                });
+
+                showMessage('authMessage', 'Post created successfully!', 'success');
+                loadFollowedPosts();
+                document.getElementById('postContent').value = '';
+                document.getElementById('postMedia').value = '';
+            } catch (error) {
+                showMessage('authMessage', `Failed to create post: ${error.message}`, 'error');
+            }
+        });
+
+// Global variable to track which post's comments are open
+let openCommentsPostId = null;
+
+async function loadFollowedPosts() {
+    try {
+        const data = await apiRequest('/posts/followed');
+        const list = document.getElementById('postsList');
+        list.innerHTML = '';
+        
+        if (!data.posts || !Array.isArray(data.posts)) {
+            list.innerHTML = '<div class="list-item">No posts found</div>';
+            return;
+        }
+        
+        data.posts.forEach(post => {
+            const postDate = new Date(post.created_at).toLocaleString();
+            const isLiked = post.user_liked || false;
+            
+            list.innerHTML += `
+                <div class="list-item" id="post-${post.id}">
+                    <h4>${post.author_name}</h4>
+                    <p>${post.content}</p>
+                    <div style="font-size: 12px; color: #666; margin: 5px 0;">
+                        📅 ${postDate} | 
+                        ❤️ ${post.likes_count} likes | 
+                        💬 ${post.comments_count} comments
+                    </div>
+                    ${post.media_urls ? `<p><small>📷 Media attached</small></p>` : ''}
+                    <div class="actions">
+                        <button class="action-btn like-btn" onclick="toggleLike('${post.id}')" 
+                                style="background: ${isLiked ? '#f56565' : '#edf2f7'}; 
+                                       color: ${isLiked ? 'white' : 'black'};
+                                       border: 1px solid ${isLiked ? '#f56565' : '#cbd5e0'}">
+                            ${isLiked ? '❤️ Unlike' : '🤍 Like'}
+                        </button>
+                        <button class="action-btn comment-btn" onclick="toggleComments('${post.id}')">
+                            💬 ${post.comments_count > 0 ? `Comments (${post.comments_count})` : 'Comment'}
+                        </button>
+                    </div>
+                    
+                    <!-- Comments section (initially hidden) -->
+                    <div id="comments-${post.id}" class="comments-section" style="display: none; margin-top: 15px;">
+                        <div id="comments-list-${post.id}" class="comments-list" style="margin-bottom: 15px;">
+                            <!-- Comments will be loaded here -->
+                            <div style="text-align: center; color: #999; padding: 10px;">
+                                Loading comments...
+                            </div>
+                        </div>
+                        
+                        <!-- Add comment form -->
+                        <div class="add-comment-form">
+                            <textarea id="new-comment-${post.id}" 
+                                      placeholder="Write a comment..." 
+                                      rows="2"
+                                      style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"></textarea>
+                            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                                <button onclick="toggleComments('${post.id}')" 
+                                        style="padding: 6px 12px; background: #e2e8f0; border: none; border-radius: 4px; cursor: pointer;">
+                                    Cancel
+                                </button>
+                                <button onclick="submitComment('${post.id}')" 
+                                        style="padding: 6px 12px; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Post Comment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Connect & Book</h3>
-                    <p>Find your perfect match and schedule your first session.</p>
+            `;
+        });
+    } catch (error) {
+        console.error('Failed to load posts:', error);
+        const list = document.getElementById('postsList');
+        list.innerHTML = '<div class="list-item error">Error loading posts: ' + error.message + '</div>';
+    }
+}
+
+// Toggle comments visibility
+window.toggleComments = async (postId) => {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    
+    // If clicking the same post's comments button, close it
+    if (openCommentsPostId === postId) {
+        commentsSection.style.display = 'none';
+        openCommentsPostId = null;
+        return;
+    }
+    
+    // Close any other open comments
+    if (openCommentsPostId) {
+        const previousComments = document.getElementById(`comments-${openCommentsPostId}`);
+        if (previousComments) {
+            previousComments.style.display = 'none';
+        }
+    }
+    
+    // Open this post's comments
+    commentsSection.style.display = 'block';
+    openCommentsPostId = postId;
+    
+    // Load comments
+    await loadComments(postId);
+    
+    // Focus on the comment textarea
+    setTimeout(() => {
+        const textarea = document.getElementById(`new-comment-${postId}`);
+        if (textarea) textarea.focus();
+    }, 100);
+}
+
+// Load comments for a post
+async function loadComments(postId) {
+    try {
+        const commentsList = document.getElementById(`comments-list-${postId}`);
+        commentsList.innerHTML = '<div style="text-align: center; color: #999; padding: 10px;">Loading comments...</div>';
+        
+        const result = await apiRequest(`/posts/comments?post_id=${postId}`, {
+             method: 'GET'
+         });
+        
+        console.log('Comments response:', result); // Debug
+        
+        let commentsHTML = '';
+        
+        // Check if we got comments in the response
+        // Adjust this based on your actual API response structure
+        let comments = [];
+        
+        if (Array.isArray(result)) {
+            // If response is directly an array
+            comments = result;
+        } else if (result.comments && Array.isArray(result.comments)) {
+            // If response has "comments" property
+            comments = result.comments;
+        } else if (result.data && Array.isArray(result.data)) {
+            // If response has "data" property
+            comments = result.data;
+        }
+        
+        if (comments.length > 0) {
+            comments.forEach(comment => {
+                const commentDate = new Date(comment.created_at || comment.createdAt || Date.now()).toLocaleString();
+                const authorName = comment.author_name || comment.authorName || comment.user_name || 'User';
+                
+                commentsHTML += `
+                    <div style="background: #f7fafc; padding: 10px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #4299e1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong style="color: #2d3748;">${comment.CommenterName.String}</strong>
+                            <small style="color: #718096;">${comment.CreatedAt}</small>
+                        </div>
+                        <p style="margin: 5px 0 0 0; color: #4a5568;">${comment.Content || ''}</p>
+                    </div>
+                `;
+            });
+        } else {
+            commentsHTML = '<div style="text-align: center; color: #999; padding: 15px; font-style: italic;">No comments yet. Be the first to comment!</div>';
+        }
+        
+        commentsList.innerHTML = commentsHTML;
+    } catch (error) {
+        console.error('Failed to load comments:', error);
+        const commentsList = document.getElementById(`comments-list-${postId}`);
+        commentsList.innerHTML = '<div style="color: #e53e3e; padding: 10px;">Failed to load comments: ' + error.message + '</div>';
+    }
+}
+
+// Submit a new comment
+window.submitComment = async (postId) => {
+    const textarea = document.getElementById(`new-comment-${postId}`);
+    const content = textarea.value.trim();
+    
+    if (!content) {
+        showMessage('authMessage', 'Please write a comment first', 'error');
+        textarea.focus();
+        return;
+    }
+    
+    try {
+        // Adjust this to match your backend API
+        const result = await apiRequest('/posts/comments', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                post_id: postId,  // Make sure this matches your backend field name
+                content: content 
+            })
+        });
+        
+        console.log('Comment response:', result); // Debug
+        
+        // Clear the textarea
+        textarea.value = '';
+        
+        // Show success message
+        const message = result.message || result.success || 'Comment posted successfully!';
+        showMessage('authMessage', message, 'success');
+        
+        // Reload comments to show the new one
+        await loadComments(postId);
+        
+        // Reload posts to update comment count
+        setTimeout(() => {
+            loadFollowedPosts();
+        }, 500);
+        
+    } catch (error) {
+        showMessage('authMessage', `Failed to post comment: ${error.message}`, 'error');
+    }
+}
+
+// Update toggleLike function
+window.toggleLike = async (postId) => {
+    try {
+        const result = await apiRequest('/posts/like', {
+            method: 'POST',
+            body: JSON.stringify({ post_id: postId })
+        });
+        
+        showMessage('authMessage', result.message || 'Like updated!', 'success');
+        
+        // Refresh posts to show updated like count and button state
+        loadFollowedPosts();
+        
+        // If comments are open for this post, keep them open
+        if (openCommentsPostId === postId) {
+            await loadComments(postId);
+        }
+    } catch (error) {
+        showMessage('authMessage', `Failed to update like: ${error.message}`, 'error');
+    }
+};
+
+// Also update your commentOnPost function to use toggleComments
+window.commentOnPost = async (postId) => {
+    await toggleComments(postId);
+}
+        // Exercises Functions
+        document.getElementById('createExerciseBtn').addEventListener('click', async () => {
+            const name = document.getElementById('exerciseName').value;
+            const description = document.getElementById('exerciseDesc').value;
+				try {
+                await apiRequest('/exercises', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, description})
+                });
+
+                showMessage('authMessage', 'Exercise created successfully!', 'success');
+                loadAllExercises();
+                document.getElementById('exerciseName').value = '';
+                document.getElementById('exerciseDesc').value = '';
+                document.getElementById('exerciseMedia').value = '';
+            } catch (error) {
+                showMessage('authMessage', `Failed to create exercise: ${error.message}`, 'error');
+            }
+        });
+
+        async function loadAllExercises() {
+    try {
+        const data = await apiRequest('/exercises');
+        const list = document.getElementById('exercisesList');
+        list.innerHTML = '';
+        
+        // Your API returns { exercises: [...] }
+        if (!data.exercises || !Array.isArray(data.exercises)) {
+            list.innerHTML = '<div class="list-item">No exercises found</div>';
+            return;
+        }
+        
+        if (data.exercises.length === 0) {
+            list.innerHTML = '<div class="list-item">No exercises found. Create one to get started!</div>';
+            return;
+        }
+        
+        data.exercises.forEach(exercise => {
+            const createdDate = new Date(exercise.created_at).toLocaleDateString();
+            
+            list.innerHTML += `
+                <div class="list-item">
+                    <h4>${exercise.name}</h4>
+                    <p><strong>By:</strong> ${exercise.author_name || 'Unknown'}</p>
+                    <p>${exercise.description}</p>
+                    ${exercise.media_urls && exercise.media_urls.length > 0 ? 
+                        `<p><small>📷 Media: ${Array.isArray(exercise.media_urls) ? exercise.media_urls.join(', ') : exercise.media_urls}</small></p>` : 
+                        ''}
+                    <p style="font-size: 12px; color: #666;">Created: ${exercise.created_at}</p>
                 </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Get Results</h3>
-                    <p>Transform your body or grow your business. Your choice.</p>
-                </div>
+            `;
+        });
+        
+    } catch (error) {
+        console.error('Failed to load exercises:', error);
+        const list = document.getElementById('exercisesList');
+        list.innerHTML = '<div class="list-item error">Error loading exercises: ' + error.message + '</div>';
+    }
+}
+
+        // Programs Functions
+let allExercises = []; // Store exercises for dropdown
+let dayCounter = 0;
+let liftCounter = {};
+
+// Load exercises for dropdown
+async function loadExercisesForDropdown() {
+    try {
+        const data = await apiRequest('/exercises');
+        if (data.exercises && Array.isArray(data.exercises)) {
+            allExercises = data.exercises;
+            console.log('Loaded exercises for dropdown:', allExercises.length);
+        }
+    } catch (error) {
+        console.error('Failed to load exercises for dropdown:', error);
+    }
+}
+
+// Add a new day
+function addDay() {
+    dayCounter++;
+    const dayId = `day-${dayCounter}`;
+    liftCounter[dayId] = 0;
+    
+    const daysContainer = document.getElementById('daysContainer');
+    daysContainer.innerHTML += `
+        <div class="day-container" id="${dayId}">
+            <div class="day-header">
+                <h5>Day ${dayCounter}</h5>
+                <button type="button" class="remove-day" onclick="removeDay('${dayId}')">× Remove Day</button>
             </div>
-        </div>
-    </section>
-
-    <!-- CTA SECTION - Final Push -->
-    <section class="cta">
-        <div class="container">
-            <h2>Ready to Level Up?</h2>
-            <p>Join thousands of trainers and clients already making moves with FitterBy.</p>
-            <div class="cta-buttons">
-                <a href="/auth?type=client" class="btn btn-primary btn-large">
-                    🏃‍♂️ Start My Fitness Journey
-                </a>
-                <a href="/auth?type=trainer" class="btn btn-secondary btn-large">
-                    👑 Build My Training Empire
-                </a>
+            <div class="form-group">
+                <input type="text" class="day-name" placeholder="Day Name (e.g., Chest Day)" 
+                       style="width: 200px; margin-right: 10px;">
+                <input type="number" class="day-order" placeholder="Order" value="${dayCounter}" 
+                       style="width: 80px;">
             </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <h3>🚀 FitterBy</h3>
-                    <p>Get fitter. Get paid. Get winning.</p>
-                </div>
-                <div class="footer-links">
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
-                    <a href="#">Support</a>
-                </div>
+            <div class="form-group">
+                <textarea class="day-desc" placeholder="Day Description" rows="2"></textarea>
             </div>
-            <p class="footer-bottom">&copy; 2024 FitterBy. Built with 💪 in the hood.</p>
+            
+            <!-- Lifts for this day -->
+            <div class="lifts-container" id="lifts-${dayId}">
+                <!-- Lifts will be added here -->
+            </div>
+            
+            <button type="button" onclick="addLift('${dayId}')" 
+                    style="margin-top: 10px; padding: 5px 10px; font-size: 12px;">
+                ➕ Add Lift to this Day
+            </button>
         </div>
-    </footer>
+    `;
+    
+    // Add first lift automatically
+    addLift(dayId);
+    
+    // Scroll to the new day
+    setTimeout(() => {
+        document.getElementById(dayId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+}
 
-    <script src="/static/js/app.js"></script>
+// Remove a day
+function removeDay(dayId) {
+    const dayElement = document.getElementById(dayId);
+    if (dayElement) {
+        dayElement.remove();
+        delete liftCounter[dayId];
+        
+        // Renumber remaining days
+        const days = document.querySelectorAll('.day-container');
+        days.forEach((day, index) => {
+            const dayNumber = index + 1;
+            const header = day.querySelector('h5');
+            if (header) {
+                header.textContent = `Day ${dayNumber}`;
+            }
+        });
+    }
+}
+
+// Add a lift to a day
+function addLift(dayId) {
+    if (!liftCounter[dayId]) liftCounter[dayId] = 0;
+    liftCounter[dayId]++;
+    const liftId = `lift-${dayId}-${liftCounter[dayId]}`;
+    
+    const liftsContainer = document.getElementById(`lifts-${dayId}`);
+    if (!liftsContainer) return;
+    
+    liftsContainer.innerHTML += `
+        <div class="lift-container" id="${liftId}">
+            <div class="lift-header">
+                <span style="font-weight: 500;">Lift ${liftCounter[dayId]}</span>
+                <button type="button" class="remove-lift" onclick="removeLift('${liftId}')">× Remove</button>
+            </div>
+            
+            <div class="form-group">
+                <select class="exercise-select" id="exercise-${liftId}">
+                    <option value="">Select Exercise</option>
+                    ${allExercises.map(exercise => 
+                        `<option value="${exercise.id}">${exercise.name}</option>`
+                    ).join('')}
+                </select>
+                <input type="number" class="lift-order" placeholder="Order" value="${liftCounter[dayId]}" 
+                       style="width: 60px;">
+            </div>
+            
+            <div class="form-group">
+                <textarea class="lift-desc" placeholder="Lift Description (e.g., Heavy bench 5x5)" 
+                         rows="2"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <input type="number" class="sets" placeholder="Sets"
+                       style="width: 100px; margin-right: 10px;">
+                <input type="number" class="reps" placeholder="Reps"
+                       style="width: 100px; margin-right: 10px;">
+            </div>
+            
+        </div>
+    `;
+    
+    // Scroll to the new lift
+    setTimeout(() => {
+        document.getElementById(liftId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+}
+
+// Remove a lift
+function removeLift(liftId) {
+    const liftElement = document.getElementById(liftId);
+    if (liftElement) {
+        liftElement.remove();
+    }
+}
+
+// Create program with all data
+document.getElementById('createProgramBtn').addEventListener('click', async () => {
+    const name = document.getElementById('programName').value.trim();
+    const description = document.getElementById('programDesc').value.trim();
+    const visibility = document.getElementById('programVisibility').value;
+    
+    if (!name) {
+        showMessage('authMessage', 'Please enter a program name', 'error');
+        return;
+    }
+    
+    // Collect days
+    const days = [];
+    const dayElements = document.querySelectorAll('.day-container');
+    
+    dayElements.forEach((dayElement, index) => {
+        const dayName = dayElement.querySelector('.day-name')?.value.trim() || `Day ${index + 1}`;
+        const dayDesc = dayElement.querySelector('.day-desc')?.value.trim() || '';
+        const dayOrder = parseInt(dayElement.querySelector('.day-order')?.value) || (index + 1);
+        const dayId = dayElement.id;
+        
+        // Collect lifts for this day
+        const lifts = [];
+        const liftElements = dayElement.querySelectorAll('.lift-container');
+        
+        liftElements.forEach((liftElement, liftIndex) => {
+            const exerciseId = liftElement.querySelector('.exercise-select')?.value;
+            const liftDesc = liftElement.querySelector('.lift-desc')?.value.trim() || '';
+            const sets = parseInt(liftElement.querySelector('.sets')?.value) || 3;
+            const reps = parseInt(liftElement.querySelector('.reps')?.value) || 5;
+            const liftOrder = parseInt(liftElement.querySelector('.lift-order')?.value) || (liftIndex + 1);
+            
+            if (exerciseId) {
+                lifts.push({
+                    exercise_id: exerciseId,
+                    description: liftDesc,
+                    sets: sets,
+                    reps: reps,
+                    order: liftOrder,
+                });
+            }
+        });
+        
+        if (lifts.length > 0) {
+            days.push({
+                name: dayName,
+                description: dayDesc,
+                order: dayOrder,
+                lifts: lifts
+            });
+        }
+    });
+    
+    if (days.length === 0) {
+        showMessage('authMessage', 'Please add at least one day with lifts', 'error');
+        return;
+    }
+    
+    // Create program object
+    const programData = {
+        name: name,
+        description: description,
+        visibility: visibility,
+        days: days
+    };
+    
+    console.log('Creating program with data:', programData);
+    
+    try {
+        const result = await apiRequest('/programs', {
+            method: 'POST',
+            body: JSON.stringify(programData)
+        });
+        
+        showMessage('authMessage', 'Program created successfully!', 'success');
+        
+        // Reset form
+        resetProgramForm();
+        
+        // Refresh programs list
+        loadAllPrograms();
+        if (currentToken) {
+            loadMyPrograms();
+        }
+        
+    } catch (error) {
+        console.error('Failed to create program:', error);
+        showMessage('authMessage', `Failed to create program: ${error.message}`, 'error');
+    }
+});
+
+// Reset program form
+function resetProgramForm() {
+    document.getElementById('programName').value = '';
+    document.getElementById('programDesc').value = '';
+    document.getElementById('programVisibility').value = 'public';
+    document.getElementById('daysContainer').innerHTML = '';
+    dayCounter = 0;
+    liftCounter = {};
+}
+
+// Initialize when programs section is opened
+document.querySelector('[data-section="programs"]').addEventListener('click', () => {
+    // Load exercises for dropdown
+    loadExercisesForDropdown();
+    
+    // Load programs
+    loadAllPrograms();
+    if (currentToken) {
+        loadMyPrograms();
+    }
+});
+
+// Load all programs
+async function loadAllPrograms() {
+    try {
+        const data = await apiRequest('/programs');
+        const list = document.getElementById('programsList');
+        list.innerHTML = '';
+        
+        if (!data.programs || !Array.isArray(data.programs)) {
+            list.innerHTML = '<div class="list-item">No programs found</div>';
+            return;
+        }
+        
+        if (data.programs.length === 0) {
+            list.innerHTML = '<div class="list-item">No programs found. Create one!</div>';
+            return;
+        }
+        
+        data.programs.forEach(program => {
+            const daysCount = program.days ? program.days.length : 0;
+            const createdDate = new Date(program.created_at).toLocaleDateString();
+            
+            list.innerHTML += `
+                <div class="list-item">
+                    <h4>${program.name}</h4>
+                    <p><strong>By:</strong> ${program.author_name || 'Unknown'}</p>
+                    <p>${program.description}</p>
+                    <div style="font-size: 12px; color: #666; margin: 5px 0;">
+                        📅 ${createdDate} | 
+                        📋 ${daysCount} days | 
+                        ${program.visibility === 'public' ? '🌍 Public' : 
+                          program.visibility === 'private' ? '🔒 Private' : 
+                          '👥 Followers Only'}
+                    </div>
+                    <button class="action-btn" onclick="subscribeToProgram('${program.id}')" 
+                            style="background: #48bb78; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                        Subscribe
+                    </button>
+                </div>
+            `;
+        });
+        
+    } catch (error) {
+        console.error('Failed to load programs:', error);
+        const list = document.getElementById('programsList');
+        list.innerHTML = '<div class="list-item error">Error loading programs: ' + error.message + '</div>';
+    }
+}
+
+// Load my subscribed programs
+async function loadMyPrograms() {
+    try {
+        const data = await apiRequest('/users/me/programs');
+        const list = document.getElementById('myProgramsList');
+        list.innerHTML = '';
+        
+        if (!Array.isArray(data.programs)) {
+            list.innerHTML = '<div class="list-item">No subscribed programs</div>';
+            return;
+        }
+        
+        if (data.programs.length === 0) {
+            list.innerHTML = '<div class="list-item">You are not subscribed to any programs yet.</div>';
+            return;
+        }
+        
+        data.programs.forEach(program => {
+            const daysCount = program.days ? program.days.length : 0;
+            
+            list.innerHTML += `
+                <div class="list-item">
+                    <h4>${program.name}</h4>
+                    <div style="font-size: 12px; color: #666; margin: 5px 0;">
+                        ${program.status} | 
+                        Subscribed on ${new Date(program.created_at).toLocaleDateString()}
+                    </div>
+                </div>
+            `;
+        });
+        
+    } catch (error) {
+        console.error('Failed to load my programs:', error);
+    }
+}
+
+// Subscribe to program
+window.subscribeToProgram = async (programId) => {
+    try {
+        const result = await apiRequest(`/programs/${programId}/subscribe`, {
+            method: 'POST'
+        });
+        
+        showMessage('authMessage', 'Successfully subscribed to program!', 'success');
+        loadMyPrograms();
+        
+    } catch (error) {
+        showMessage('authMessage', `Failed to subscribe: ${error.message}`, 'error');
+    }
+};
+
+        // Workouts Functions
+        document.getElementById('createWorkoutBtn').addEventListener('click', async () => {
+            const program_id = document.getElementById('workoutProgramId').value;
+            const program_day_id = document.getElementById('workoutDayId').value;
+            const exercise_id = document.getElementById('workoutExerciseId').value;
+            const weight = parseInt(document.getElementById('workoutWeight').value);
+            const sets = parseInt(document.getElementById('workoutSets').value);
+            const reps = parseInt(document.getElementById('workoutReps').value);
+
+            try {
+                await apiRequest('/workouts', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        program_id,
+                        program_day_id,
+                        lifts: [{
+                            exercise_id,
+                            weight,
+                            sets,
+                            reps
+                        }]
+                    })
+                });
+
+                showMessage('authMessage', 'Workout logged successfully!', 'success');
+                loadMyWorkouts();
+                
+                // Clear form
+                ['workoutProgramId', 'workoutDayId', 'workoutExerciseId', 'workoutWeight', 'workoutSets', 'workoutReps']
+                    .forEach(id => document.getElementById(id).value = '');
+            } catch (error) {
+                showMessage('authMessage', `Failed to log workout: ${error.message}`, 'error');
+            }
+        });
+
+        async function loadMyWorkouts() {
+            try {
+                const data = await apiRequest('/users/me/workouts');
+                const list = document.getElementById('workoutsList');
+                list.innerHTML = '';
+
+                data.forEach(workout => {
+                    list.innerHTML += `
+                        <div class="list-item">
+                            <h4>${workout.program_name || 'Workout'}</h4>
+                            <p>Completed: ${new Date(workout.created_at).toLocaleDateString()}</p>
+                            <p>Lifts: ${workout.lifts?.length || 0}</p>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to load workouts:', error);
+            }
+        }
+
+        // Global functions for button actions
+        window.likePost = async (postId) => {
+    try {
+        const result = await apiRequest('/posts/like', {
+            method: 'POST',
+            body: JSON.stringify({ post_id: postId })
+        });
+        
+        // Check if the API returns a success message or updated post
+        showMessage('authMessage', result.message || 'Post liked!', 'success');
+        
+        // Refresh the posts list to show updated like count
+        loadFollowedPosts();
+    } catch (error) {
+        showMessage('authMessage', `Failed to like post: ${error.message}`, 'error');
+    }
+};
+
+        window.commentOnPost = async (postId) => {
+            const content = prompt('Enter your comment:');
+            if (content) {
+                try {
+                    await apiRequest('/posts/comments', {
+                        method: 'POST',
+                        body: JSON.stringify({ post_id: postId, content })
+                    });
+                    showMessage('authMessage', 'Comment added!', 'success');
+                } catch (error) {
+                    showMessage('authMessage', `Failed to add comment: ${error.message}`, 'error');
+                }
+            }
+        };
+
+        window.subscribeToProgram = async (programId) => {
+            try {
+                await apiRequest(`/programs/${programId}/subscribe`, {
+                    method: 'POST'
+                });
+                showMessage('authMessage', 'Subscribed to program!', 'success');
+                loadMyPrograms();
+            } catch (error) {
+                showMessage('authMessage', `Failed to subscribe: ${error.message}`, 'error');
+            }
+        };
+
+        // Initialize
+        updateAuthUI();
+
+        // Add event listeners for section loads
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const section = button.dataset.section;
+                switch(section) {
+                    case 'profile':
+                        if (currentToken) {
+                            loadProfile();
+                            loadFollowing();
+                        }
+                        break;
+                    case 'posts':
+                        if (currentToken) {
+                            loadFollowedPosts();
+                        }
+                        break;
+                    case 'exercises':
+                        loadAllExercises();
+                        break;
+                    case 'programs':
+                        loadAllPrograms();
+                        if (currentToken) {
+                            loadMyPrograms();
+                        }
+                        break;
+                    case 'workouts':
+                        if (currentToken) {
+                            loadMyWorkouts();
+                        }
+                        break;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

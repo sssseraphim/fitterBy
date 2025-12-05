@@ -60,8 +60,10 @@ WHERE program_day_id = $1
 ORDER BY lift_order ASC;
 
 -- name: GetUserSubscribedPrograms :many
-SELECT * FROM users_programs
-WHERE user_id = $1;
+SELECT users_programs.*, programs.name
+FROM users_programs
+LEFT JOIN programs ON users_programs.program_id = programs.id
+WHERE users_programs.user_id = $1;
 
 -- name: SubscribeToProgram :exec
 INSERT INTO users_programs(

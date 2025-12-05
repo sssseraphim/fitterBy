@@ -14,6 +14,27 @@ import (
 	"github.com/lib/pq"
 )
 
+const checkUserLikedPost = `-- name: CheckUserLikedPost :one
+SELECT EXISTS (
+		SELECT 1
+		FROM posts_likes
+		WHERE post_id = $1
+		AND user_id = $2
+) AS user_liked
+`
+
+type CheckUserLikedPostParams struct {
+	PostID uuid.UUID
+	UserID uuid.UUID
+}
+
+func (q *Queries) CheckUserLikedPost(ctx context.Context, arg CheckUserLikedPostParams) (bool, error) {
+	row := q.db.QueryRowContext(ctx, checkUserLikedPost, arg.PostID, arg.UserID)
+	var user_liked bool
+	err := row.Scan(&user_liked)
+	return user_liked, err
+}
+
 const commentOnPost = `-- name: CommentOnPost :exec
 INSERT INTO posts_comments(user_id, post_id, content)
 VALUES (
@@ -74,10 +95,27 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 	return i, err
 }
 
+const deleteUserPostLike = `-- name: DeleteUserPostLike :exec
+DELETE FROM posts_likes
+WHERE post_id = $1
+AND user_id = $2
+`
+
+type DeleteUserPostLikeParams struct {
+	PostID uuid.UUID
+	UserID uuid.UUID
+}
+
+func (q *Queries) DeleteUserPostLike(ctx context.Context, arg DeleteUserPostLikeParams) error {
+	_, err := q.db.ExecContext(ctx, deleteUserPostLike, arg.PostID, arg.UserID)
+	return err
+}
+
 const getFollowedPosts = `-- name: GetFollowedPosts :many
 SELECT posts.id, users.id as author_id, users.name as author_name, posts.created_at, posts.visibility, posts.media_urls, posts.content,
 		(SELECT COUNT(*) FROM posts_likes where posts.id = posts_likes.post_id) as like_count,
-		(SELECT COUNT(*) FROM posts_comments where posts.id = posts_comments.post_id) as comments_count
+		(SELECT COUNT(*) FROM posts_comments where posts.id = posts_comments.post_id) as comments_count,
+		EXISTS(SELECT 1 FROM posts_likes WHERE posts_likes.post_id = posts.id AND posts_likes.user_id = $1) as user_liked
 FROM posts 
 INNER JOIN user_follows ON posts.user_id = user_follows.followed_id
 INNER JOIN users ON posts.user_id = users.id
@@ -96,10 +134,11 @@ type GetFollowedPostsRow struct {
 	Content       string
 	LikeCount     int64
 	CommentsCount int64
+	UserLiked     bool
 }
 
-func (q *Queries) GetFollowedPosts(ctx context.Context, followerID uuid.UUID) ([]GetFollowedPostsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getFollowedPosts, followerID)
+func (q *Queries) GetFollowedPosts(ctx context.Context, userID uuid.UUID) ([]GetFollowedPostsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFollowedPosts, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -117,6 +156,7 @@ func (q *Queries) GetFollowedPosts(ctx context.Context, followerID uuid.UUID) ([
 			&i.Content,
 			&i.LikeCount,
 			&i.CommentsCount,
+			&i.UserLiked,
 		); err != nil {
 			return nil, err
 		}
@@ -129,6 +169,19 @@ func (q *Queries) GetFollowedPosts(ctx context.Context, followerID uuid.UUID) ([
 		return nil, err
 	}
 	return items, nil
+}
+
+const getLikeCount = `-- name: GetLikeCount :one
+SELECT COUNT(*)
+FROM posts_likes
+WHERE post_id = $1
+`
+
+func (q *Queries) GetLikeCount(ctx context.Context, postID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getLikeCount, postID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const getPost = `-- name: GetPost :one

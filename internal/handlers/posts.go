@@ -26,6 +26,7 @@ type Post struct {
 	MediaUrls     []string  `json:"media_urls"`
 	Visibility    string    `json:"visibility"`
 	LikesCount    int       `json:"likes_count"`
+	Liked         bool      `json:"liked"`
 	CommentsCount int       `json:"comments_count"`
 }
 
@@ -125,6 +126,7 @@ func (h *PostHandler) HandleGetFollowedPosts(w http.ResponseWriter, r *http.Requ
 			Visibility:    p.Visibility,
 			LikesCount:    int(p.LikeCount),
 			CommentsCount: int(p.CommentsCount),
+			Liked:         p.UserLiked,
 		})
 	}
 	respondWithJSON(w, 200, resp)
@@ -140,15 +142,37 @@ func (h *PostHandler) HandlerLikePost(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, 400, "wrong request", err)
 		return
 	}
-	err := h.DB.LikePost(r.Context(), database.LikePostParams{
+	checkResult, err := h.DB.CheckUserLikedPost(r.Context(), database.CheckUserLikedPostParams{
 		UserID: userId,
-		PostID: req.PostId,
-	})
+		PostID: req.PostId})
 	if err != nil {
-		respondWithError(w, http.StatusConflict, "failed to like", err)
+		respondWithError(w, 500, "failed to like post", err)
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]string{"success": "success"})
+	var message string
+	if !checkResult {
+		err = h.DB.LikePost(r.Context(), database.LikePostParams{
+			UserID: userId,
+			PostID: req.PostId,
+		})
+		if err != nil {
+			respondWithError(w, http.StatusConflict, "failed to like", err)
+			return
+		}
+		message = "Post unliked"
+	} else {
+		err = h.DB.DeleteUserPostLike(r.Context(), database.DeleteUserPostLikeParams{
+			UserID: userId,
+			PostID: req.PostId,
+		})
+		if err != nil {
+			respondWithError(w, http.StatusConflict, "failed to unlike", err)
+			return
+		}
+		message = "Post unliked"
+	}
+	likeCount, _ := h.DB.GetLikeCount(r.Context(), req.PostId)
+	respondWithJSON(w, http.StatusCreated, map[string]any{"success": true, "message": message, "likes_count": likeCount, "user_liked": !checkResult})
 }
 
 func userIdFromContext(r *http.Request) uuid.UUID {
@@ -178,14 +202,17 @@ func (h *PostHandler) HandlerComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) HandlerGetComments(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		PostID uuid.UUID `json:"post_id"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, 400, "wrong request", err)
+	postIDStr := r.URL.Query().Get("post_id")
+	if postIDStr == "" {
+		respondWithError(w, 400, "post_id query parameter is required", nil)
 		return
 	}
-	comments, err := h.DB.GetPostComments(r.Context(), req.PostID)
+	postId, err := uuid.Parse(postIDStr)
+	if err != nil {
+		respondWithError(w, 400, "wrong post id format", err)
+		return
+	}
+	comments, err := h.DB.GetPostComments(r.Context(), postId)
 	if err != nil {
 		respondWithError(w, 500, "failed to get comment", err)
 		return
