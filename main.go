@@ -25,8 +25,9 @@ type apiConfig struct {
 }
 
 func main() {
-	godotenv.Load(".env")
+	godotenv.Load(".env.example")
 	dbURL := os.Getenv("DB_URL")
+	fmt.Println(dbURL)
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to db: %v", err)
