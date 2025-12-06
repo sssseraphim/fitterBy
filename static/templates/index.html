@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymBro - Fitness Social Network</title>
+    <title>fitterBy - Fitness Social Network</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+                        url('https://images.unsplash.com/photo-1534367507877-0edd93bd013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
-            color: #333;
+            color: #fff;
         }
 
         .container {
@@ -25,88 +27,145 @@
         }
 
         header {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #111 0%, #333 100%);
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 2px solid #ff1e00;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff1e00, #ff8a00);
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #4a5568;
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff1e00, #ff8a00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         #authStatus {
-            font-weight: 500;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            background: rgba(255, 30, 0, 0.2);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 30, 0, 0.5);
         }
 
         #logoutBtn {
-            background: #e53e3e;
+            background: linear-gradient(135deg, #ff1e00 0%, #c53030 100%);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(255, 30, 0, 0.3);
+            transition: all 0.3s ease;
             display: none;
         }
 
         #logoutBtn:hover {
-            background: #c53030;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 30, 0, 0.4);
+            background: linear-gradient(135deg, #ff2e00 0%, #d53030 100%);
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
         }
 
         .sidebar {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(40, 40, 40, 0.95) 100%);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid #333;
+            backdrop-filter: blur(10px);
         }
 
         .nav-button {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background: #edf2f7;
-            border: none;
-            border-radius: 5px;
+            padding: 16px 20px;
+            margin: 12px 0;
+            background: linear-gradient(135deg, #222 0%, #333 100%);
+            border: 2px solid #444;
+            border-radius: 8px;
             text-align: left;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ddd;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .nav-button:hover {
-            background: #cbd5e0;
-            transform: translateX(5px);
+            background: linear-gradient(135deg, #333 0%, #444 100%);
+            transform: translateX(10px);
+            border-color: #ff1e00;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 30, 0, 0.3);
         }
 
         .nav-button.active {
-            background: #667eea;
-            color: white;
+            background: linear-gradient(135deg, #ff1e00 0%, #ff8a00 100%);
+            border-color: #ff1e00;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 30, 0, 0.4);
+        }
+
+        .nav-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            font-size: 18px;
         }
 
         .content-area {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            min-height: 500px;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(40, 40, 40, 0.95) 100%);
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid #333;
+            backdrop-filter: blur(10px);
+            min-height: 600px;
         }
 
         .section {
@@ -118,120 +177,277 @@
         }
 
         h2 {
-            color: #4a5568;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #edf2f7;
+            color: #fff;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #ff1e00;
+            font-size: 28px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         h3 {
-            color: #4a5568;
-            margin: 15px 0;
+            color: #fff;
+            margin: 20px 0 15px;
+            font-size: 22px;
+            font-weight: 700;
+            border-left: 4px solid #ff8a00;
+            padding-left: 15px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #4a5568;
-            font-weight: 500;
+            margin-bottom: 8px;
+            color: #ff8a00;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13px;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e0;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 14px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid #444;
+            border-radius: 6px;
+            font-size: 15px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #ff1e00;
+            box-shadow: 0 0 0 3px rgba(255, 30, 0, 0.2);
+            background: rgba(40, 40, 40, 0.9);
         }
 
         textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
         }
 
         button:not(.nav-button):not(#logoutBtn) {
-            background: #667eea;
+            background: linear-gradient(135deg, #ff1e00 0%, #ff8a00 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
+            padding: 15px 30px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 500;
-            transition: background 0.3s ease;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 30, 0, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         button:hover:not(.nav-button):not(#logoutBtn) {
-            background: #5a67d8;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 30, 0, 0.4);
+            background: linear-gradient(135deg, #ff2e00 0%, #ff9a00 100%);
+        }
+
+        button:active:not(.nav-button):not(#logoutBtn) {
+            transform: translateY(0);
         }
 
         .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
             display: none;
+            font-weight: 700;
+            border: 2px solid;
         }
 
         .message.success {
-            background: #c6f6d5;
-            color: #22543d;
-            border: 1px solid #9ae6b4;
+            background: linear-gradient(135deg, rgba(38, 179, 100, 0.2) 0%, rgba(56, 161, 105, 0.2) 100%);
+            color: #48bb78;
+            border-color: #48bb78;
             display: block;
         }
 
         .message.error {
-            background: #fed7d7;
-            color: #742a2a;
-            border: 1px solid #fc8181;
+            background: linear-gradient(135deg, rgba(245, 101, 101, 0.2) 0%, rgba(229, 62, 62, 0.2) 100%);
+            color: #f56565;
+            border-color: #f56565;
             display: block;
         }
 
         .list-item {
-            background: #f7fafc;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, rgba(30, 30, 30, 0.8) 0%, rgba(50, 50, 50, 0.8) 100%);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 6px solid #ff1e00;
+            border: 2px solid #444;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 30, 0, 0.2);
+            border-color: #ff1e00;
         }
 
         .list-item h4 {
-            color: #4a5568;
-            margin-bottom: 5px;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: 900;
         }
 
         .list-item p {
-            color: #718096;
+            color: #bbb;
             font-size: 14px;
+            line-height: 1.5;
         }
 
         .actions {
-            margin-top: 10px;
+            margin-top: 15px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .action-btn {
-            padding: 5px 10px;
+            padding: 8px 16px;
             font-size: 12px;
-            border-radius: 3px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
         }
 
         .like-btn {
-            background: #f56565;
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
         }
 
         .comment-btn {
-            background: #4299e1;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+        }
+
+        /* Additional aggressive styling */
+        .stats-bar {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ff1e00;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ff1e00;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #bbb;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #ff1e00 0%, #ff8a00 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff1e00, #ff8a00);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Workout section specific */
+        #workoutStatus {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #ff1e00;
+        }
+
+        /* Modal styling */
+        #programSelector {
+            background: rgba(0, 0, 0, 0.9) !important;
+            border: 3px solid #ff1e00 !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+        }
+
+        /* Comments section */
+        .comments-section {
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #333;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .content-area {
+                order: 1;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">🏋🏾‍♂️ GymBro</div>
+            <div class="logo">fitterBy</div>
             <div class="user-info">
                 <span id="authStatus">Not logged in</span>
                 <button id="logoutBtn">Logout</button>
@@ -368,31 +584,41 @@
 				</div>
 
                 <!-- Workouts Section -->
-                <div id="workouts" class="section">
-                    <h2>Workouts</h2>
-                    <h3>Log Workout</h3>
-                    <div class="form-group">
-                        <input type="text" id="workoutProgramId" placeholder="Program ID">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="workoutDayId" placeholder="Program Day ID">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="workoutExerciseId" placeholder="Exercise ID">
-                    </div>
-                    <div class="form-group">
-                        <input type="number" id="workoutWeight" placeholder="Weight">
-                    </div>
-                    <div class="form-group">
-                        <input type="number" id="workoutSets" placeholder="Sets">
-                    </div>
-                    <div class="form-group">
-                        <input type="number" id="workoutReps" placeholder="Reps">
-                    </div>
-                    <button id="createWorkoutBtn">Log Workout</button>
-                    
-                    <h3>My Workouts</h3>
-                    <div id="workoutsList"></div>
+<div id="workouts" class="section">
+    <h2>Today's Workout</h2>
+    
+    <div id="workoutStatus" style="margin-bottom: 20px;">
+        <div id="noActiveProgram" style="text-align: center; padding: 40px; background: #f7fafc; border-radius: 8px;">
+            <p style="color: #718096;">No active program selected</p>
+            <button onclick="showProgramSelector()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Select Program
+            </button>
+        </div>
+        
+        <div id="activeWorkout" style="display: none;">
+            <!-- Workout content will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- Program Selector Modal (hidden by default) -->
+    <div id="programSelector" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h3>Select Your Active Program</h3>
+            <div id="programList" style="margin: 20px 0;">
+                <!-- Programs will be loaded here -->
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="hideProgramSelector()" style="padding: 10px 20px; background: #e2e8f0; border: none; border-radius: 5px; cursor: pointer;">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Workouts -->
+    <h3 style="margin-top: 30px;">Recent Workouts</h3>
+    <div id="recentWorkoutsList"></div>
+</div>
                 </div>
             </div>
         </div>
@@ -1272,60 +1498,405 @@ window.subscribeToProgram = async (programId) => {
     }
 };
 
-        // Workouts Functions
-        document.getElementById('createWorkoutBtn').addEventListener('click', async () => {
-            const program_id = document.getElementById('workoutProgramId').value;
-            const program_day_id = document.getElementById('workoutDayId').value;
-            const exercise_id = document.getElementById('workoutExerciseId').value;
-            const weight = parseInt(document.getElementById('workoutWeight').value);
-            const sets = parseInt(document.getElementById('workoutSets').value);
-            const reps = parseInt(document.getElementById('workoutReps').value);
+       // Global variables
+let activeProgram = null;
+let activeDayIndex = 0;
+let workoutHistory = [];
 
-            try {
-                await apiRequest('/workouts', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        program_id,
-                        program_day_id,
-                        lifts: [{
-                            exercise_id,
-                            weight,
-                            sets,
-                            reps
-                        }]
-                    })
-                });
+// Initialize workout section
+document.querySelector('[data-section="workouts"]').addEventListener('click', () => {
+    loadWorkoutSection();
+});
 
-                showMessage('authMessage', 'Workout logged successfully!', 'success');
-                loadMyWorkouts();
-                
-                // Clear form
-                ['workoutProgramId', 'workoutDayId', 'workoutExerciseId', 'workoutWeight', 'workoutSets', 'workoutReps']
-                    .forEach(id => document.getElementById(id).value = '');
-            } catch (error) {
-                showMessage('authMessage', `Failed to log workout: ${error.message}`, 'error');
-            }
+// Load workout section
+async function loadWorkoutSection() {
+    try {
+        // Try to load active program from localStorage
+        const savedProgram = localStorage.getItem('gymbro_active_program');
+        const savedDay = localStorage.getItem('gymbro_active_day');
+        
+        if (savedProgram) {
+            activeProgram = JSON.parse(savedProgram);
+            activeDayIndex = parseInt(savedDay) || 0;
+            await loadActiveWorkout();
+        } else {
+            showNoActiveProgram();
+        }
+        
+        // Load recent workouts
+        await loadRecentWorkouts();
+        
+    } catch (error) {
+        console.error('Failed to load workout section:', error);
+        showNoActiveProgram();
+    }
+}
+
+// Show no active program state
+function showNoActiveProgram() {
+    document.getElementById('noActiveProgram').style.display = 'block';
+    document.getElementById('activeWorkout').style.display = 'none';
+}
+
+// Show program selector modal
+function showProgramSelector() {
+    loadProgramsForSelector();
+    document.getElementById('programSelector').style.display = 'flex';
+}
+
+// Hide program selector modal
+function hideProgramSelector() {
+    document.getElementById('programSelector').style.display = 'none';
+}
+
+// Load programs for selector
+async function loadProgramsForSelector() {
+    try {
+        const data = await apiRequest('/users/me/programs');
+        const programList = document.getElementById('programList');
+        programList.innerHTML = '';
+        
+        let programs = [];
+        if (Array.isArray(data)) {
+            programs = data;
+        } else if (data.programs && Array.isArray(data.programs)) {
+            programs = data.programs;
+        }
+        
+        if (programs.length === 0) {
+            programList.innerHTML = '<p style="color: #718096;">You are not subscribed to any programs yet.</p>';
+            return;
+        }
+        
+        programs.forEach(program => {
+            const daysCount = program.days ? program.days.length : 0;
+            
+            programList.innerHTML += `
+                <div class="list-item" style="cursor: pointer; margin-bottom: 10px;" 
+                     onclick="selectActiveProgram('${program.program_id}')">
+                    <h4>${program.name || 'Unnamed Program'}</h4>
+                    <p><strong>By:</strong> ${program.author_name || 'Unknown'}</p>
+                    <p>${program.description || 'No description'}</p>
+                    <div style="font-size: 12px; color: #666;">
+                        📋 ${daysCount} days | 
+                        ${program.visibility === 'public' ? '🌍 Public' : '🔒 Private'}
+                    </div>
+                </div>
+            `;
         });
+        
+    } catch (error) {
+        console.error('Failed to load programs:', error);
+        programList.innerHTML = '<p style="color: #e53e3e;">Failed to load programs</p>';
+    }
+}
 
-        async function loadMyWorkouts() {
-            try {
-                const data = await apiRequest('/users/me/workouts');
-                const list = document.getElementById('workoutsList');
-                list.innerHTML = '';
+// Select active program
+async function selectActiveProgram(programId) {
+    try {
+        // Load program details
+        const program = await apiRequest(`/programs/${programId}`);
+        
+        // Set as active
+        activeProgram = program;
+        activeDayIndex = 0; // Start with first day
+        
+        // Save to localStorage
+        localStorage.setItem('gymbro_active_program', JSON.stringify(program));
+        localStorage.setItem('gymbro_active_day', '0');
+        
+        // Hide selector
+        hideProgramSelector();
+        
+        // Load workout
+        await loadActiveWorkout();
+        
+    } catch (error) {
+        console.error('Failed to select program:', error);
+        showMessage('authMessage', 'Failed to select program', 'error');
+    }
+}
 
-                data.forEach(workout => {
-                    list.innerHTML += `
-                        <div class="list-item">
-                            <h4>${workout.program_name || 'Workout'}</h4>
-                            <p>Completed: ${new Date(workout.created_at).toLocaleDateString()}</p>
-                            <p>Lifts: ${workout.lifts?.length || 0}</p>
+// Load active workout
+async function loadActiveWorkout() {
+    if (!activeProgram || !activeProgram.days || activeProgram.days.length === 0) {
+        showNoActiveProgram();
+        return;
+    }
+    
+    const currentDay = activeProgram.days[activeDayIndex];
+    if (!currentDay || !currentDay.lifts) {
+        showNoActiveProgram();
+        return;
+    }
+    
+    // Load previous workouts for this program/day
+    await loadWorkoutHistory();
+    
+    // Build workout UI
+    let workoutHTML = `
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>${activeProgram.name} - ${currentDay.name || `Day ${activeDayIndex + 1}`}</h3>
+                <div style="display: flex; gap: 10px;">
+                    ${activeDayIndex > 0 ? 
+                        `<button onclick="changeDay(${activeDayIndex - 1})" style="padding: 8px 12px; background: #a0aec0; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            ← Previous Day
+                        </button>` : ''
+                    }
+                    ${activeDayIndex < activeProgram.days.length - 1 ? 
+                        `<button onclick="changeDay(${activeDayIndex + 1})" style="padding: 8px 12px; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Next Day →
+                        </button>` : ''
+                    }
+                    <button onclick="showProgramSelector()" style="padding: 8px 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Change Program
+                    </button>
+                </div>
+            </div>
+            <p>${currentDay.description || ''}</p>
+            <div style="font-size: 14px; color: #718096;">
+                Day ${activeDayIndex + 1} of ${activeProgram.days.length} • 
+                ${currentDay.lifts.length} exercises
+            </div>
+        </div>
+        
+        <div id="exercisesList">
+    `;
+    
+    // Add each exercise
+    currentDay.lifts.forEach((lift, index) => {
+        const previousResult = findPreviousResult(lift.exercise_id);
+        
+        workoutHTML += `
+            <div class="list-item" style="margin-bottom: 15px;">
+                <h4>${index + 1}. ${lift.name || 'Exercise'}</h4>
+                <p>${lift.description || ''}</p>
+                <div style="margin: 10px 0; padding: 10px; background: #edf2f7; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <strong>Target:</strong> ${lift.sets || 3} sets × ${lift.reps || 5} reps
                         </div>
-                    `;
-                });
-            } catch (error) {
-                console.error('Failed to load workouts:', error);
+                        ${previousResult ? 
+                            `<div><strong>Previous:</strong> ${previousResult}</div>` : 
+                            ''
+                        }
+                    </div>
+                    
+                    <!-- Current session inputs -->
+                    <div style="background: white; padding: 15px; border-radius: 4px;">
+                        <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <label style="display: block; font-size: 14px; margin-bottom: 5px;">Weight (lbs)</label>
+                                <input type="number" id="weight-${index}" placeholder="Weight" step="0.5" 
+                                       style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                            </div>
+                            <div style="flex: 2;">
+                                <label style="display: block; font-size: 14px; margin-bottom: 5px;">Reps per set</label>
+                                <div style="display: flex; gap: 5px;">
+                                    ${Array.from({length: lift.sets || 3}, (_, i) => `
+                                        <input type="number" id="reps-${index}-${i}" placeholder="${lift.reps || 5}" 
+                                               style="flex: 1; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    workoutHTML += `
+        </div>
+        <div style="margin-top: 20px; text-align: center;">
+            <button onclick="logCompleteWorkout()" 
+                    style="padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                🏋️ Log Complete Workout
+            </button>
+        </div>
+    `;
+    
+    // Update UI
+    document.getElementById('noActiveProgram').style.display = 'none';
+    document.getElementById('activeWorkout').style.display = 'block';
+    document.getElementById('activeWorkout').innerHTML = workoutHTML;
+}
+
+// Change day
+async function changeDay(newIndex) {
+    if (newIndex >= 0 && newIndex < activeProgram.days.length) {
+        activeDayIndex = newIndex;
+        localStorage.setItem('gymbro_active_day', newIndex.toString());
+        await loadActiveWorkout();
+    }
+}
+
+// Load workout history
+async function loadWorkoutHistory() {
+    try {
+        const data = await apiRequest('/users/me/workouts');
+        
+        workoutHistory = [];
+        if (Array.isArray(data)) {
+            workoutHistory = data;
+        } else if (data.workouts && Array.isArray(data.workouts)) {
+            workoutHistory = data.workouts;
+        }
+        
+    } catch (error) {
+        console.error('Failed to load workout history:', error);
+        workoutHistory = [];
+    }
+}
+
+// Find previous result for exercise
+function findPreviousResult(exerciseId) {
+    for (const workout of workoutHistory) {
+        if (workout.lifts && workout.program_id === activeProgram.id) {
+            for (const lift of workout.lifts) {
+                if (lift.exercise_id === exerciseId) {
+                    return `${lift.weight} lbs (${lift.reps} reps)`;
+                }
             }
         }
+    }
+    return null;
+}
+
+// Log single exercise
+async function logExercise(exerciseIndex) {
+    const lift = activeProgram.days[activeDayIndex].lifts[exerciseIndex];
+    const weight = parseFloat(document.getElementById(`weight-${exerciseIndex}`).value);
+    
+    if (!weight || isNaN(weight)) {
+        showMessage('authMessage', 'Please enter weight', 'error');
+        return;
+    }
+    
+    // Collect reps
+    const reps = [];
+    for (let i = 0; i < (lift.sets || 3); i++) {
+        const repInput = document.getElementById(`reps-${exerciseIndex}-${i}`);
+        const repValue = parseInt(repInput.value) || (lift.reps || 5);
+        reps.push(repValue);
+    }
+    
+    
+    // Show success
+    showMessage('authMessage', `Logged ${lift.name || 'exercise'} successfully!`, 'success');
+    
+    // Clear inputs
+    document.getElementById(`weight-${exerciseIndex}`).value = '';
+    document.getElementById(`notes-${exerciseIndex}`).value = '';
+    for (let i = 0; i < (lift.sets || 3); i++) {
+        document.getElementById(`reps-${exerciseIndex}-${i}`).value = lift.reps || 5;
+    }
+}
+
+// Log complete workout
+async function logCompleteWorkout() {
+    const currentDay = activeProgram.days[activeDayIndex];
+    const liftsData = [];
+    
+    // Collect all exercise data
+    currentDay.lifts.forEach((lift, index) => {
+        const weight = parseFloat(document.getElementById(`weight-${index}`).value);
+        
+        if (!weight || isNaN(weight)) {
+            showMessage('authMessage', `Please enter weight for exercise ${index + 1}`, 'error');
+            return;
+        }
+        
+        // Collect reps
+        const reps = [];
+        for (let i = 0; i < (lift.sets || 3); i++) {
+            const repInput = document.getElementById(`reps-${index}-${i}`);
+            reps.push(parseInt(repInput.value) || (lift.reps || 5));
+        }
+        
+        
+        liftsData.push({
+            exercise_id: lift.exercise_id,
+            weight: weight,
+            sets: lift.sets || 3,
+            reps: lift.reps || 5,
+            completed_reps: reps
+        });
+    });
+    
+    try {
+        const result = await apiRequest('/workouts', {
+            method: 'POST',
+            body: JSON.stringify({
+                program_id: activeProgram.id,
+                program_day_id: currentDay.id || `day-${activeDayIndex}`,
+                lifts: liftsData
+            })
+        });
+        
+        showMessage('authMessage', 'Workout logged successfully! Great work! 💪', 'success');
+        
+        // Clear all inputs
+        currentDay.lifts.forEach((lift, index) => {
+            document.getElementById(`weight-${index}`).value = '';
+            document.getElementById(`notes-${index}`).value = '';
+            for (let i = 0; i < (lift.sets || 3); i++) {
+                document.getElementById(`reps-${index}-${i}`).value = lift.reps || 5;
+            }
+        });
+        
+        // Reload recent workouts
+        await loadRecentWorkouts();
+        
+        // Refresh workout history
+        await loadWorkoutHistory();
+        
+    } catch (error) {
+        console.error('Failed to log workout:', error);
+        showMessage('authMessage', `Failed to log workout: ${error.message}`, 'error');
+    }
+}
+
+// Load recent workouts (simple version)
+async function loadRecentWorkouts() {
+    try {
+        const data = await apiRequest('/users/me/workouts');
+        const list = document.getElementById('recentWorkoutsList');
+        list.innerHTML = '';
+        
+        let workouts = [];
+        if (Array.isArray(data)) {
+            workouts = data.slice(0, 3); // Last 3 workouts
+        } else if (data.workouts && Array.isArray(data.workouts)) {
+            workouts = data.workouts.slice(0, 3);
+        }
+        
+        if (workouts.length === 0) {
+            list.innerHTML = '<div class="list-item">No recent workouts</div>';
+            return;
+        }
+        
+        workouts.forEach(workout => {
+            const date = new Date(workout.created_at).toLocaleDateString();
+            
+            list.innerHTML += `
+                <div class="list-item">
+                    <h4>${workout.program_name || 'Workout'}</h4>
+                    <p>${workout.day_name || ''}</p>
+                    <div style="font-size: 12px; color: #666; margin: 5px 0;">
+                        📅 ${date} • 
+                        💪 ${workout.lifts ? workout.lifts.length : 0} exercises
+                    </div>
+                </div>
+            `;
+        });
+        
+    } catch (error) {
+        console.error('Failed to load recent workouts:', error);
+        list.innerHTML = '<div class="list-item">Error loading workouts</div>';
+    }
+}
 
         // Global functions for button actions
         window.likePost = async (postId) => {

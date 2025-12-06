@@ -149,7 +149,6 @@ func (h *ProgramHandler) HandleGetExercises(w http.ResponseWriter, r *http.Reque
 func (h *ProgramHandler) HandleCreateProgram(w http.ResponseWriter, r *http.Request) {
 	userId := userIdFromContext(r)
 	var req Program
-	fmt.Print(r.Body)
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("bad request: %v", err), err)
 		return
@@ -230,6 +229,7 @@ func (h *ProgramHandler) HandleGetProgram(w http.ResponseWriter, r *http.Request
 		respondWithError(w, 400, "wrong program id", err)
 		return
 	}
+	fmt.Println(programId)
 	program, err := h.DB.GetProgram(r.Context(), programId)
 	if err != nil {
 		respondWithError(w, 404, "failed to find program", err)
