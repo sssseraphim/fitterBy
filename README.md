@@ -13,7 +13,8 @@ docker-compose up --build
 ---
 
 ## UI Example
-<img width="1408" height="656" alt="image" src="https://github.com/user-attachments/assets/9eaa804c-3664-4044-b62d-058eb79cc5ae" />
+<img width="1408" height="656" alt="image" src="https://github.com/user-attachments/assets/5d970378-61ee-4bcb-bc9b-665f4955ee7c" />
+
 
 ##  **Base URL**
 ```
