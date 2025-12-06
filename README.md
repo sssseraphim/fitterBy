@@ -1,10 +1,21 @@
-# **GymBro API** - Fitness Social Network
+# **fitterBy** - Fitness Social Network
 
-A RESTful API for fitness enthusiasts to create programs, track workouts, and connect with others.
+A RESTful API for fitness to create programs, log workouts, and connect with others.
 
+
+## Quick Start With Docker
+
+```bash
+git clone https://github.com/sssseraphim/fitterBy.git
+cd fitterBy
+docker-compose up --build
+```
 ---
 
-## 🌐 **Base URL**
+## UI Example
+<img width="1408" height="656" alt="image" src="https://github.com/user-attachments/assets/9eaa804c-3664-4044-b62d-058eb79cc5ae" />
+
+##  **Base URL**
 ```
 http://localhost:8080/api
 ```
