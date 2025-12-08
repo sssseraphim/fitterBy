@@ -2,17 +2,63 @@
 
 A RESTful API for fitness to create programs, log workouts, and connect with others.
 
+## Motivation
+I offten watch youtube fitness and see a lot of free programs by big and small youtubers, so i wanted to create an app where they, or anybody else could publish them, 
+so others could run them. This web also has blogpost features, where you could anounce your program and workout logger features for trackin progressive overload over time.
 
-## Quick Start With Docker
+## Quick Start
 
+### Docker
 ```bash
 git clone https://github.com/sssseraphim/fitterBy.git
 cd fitterBy
 docker-compose up --build
 ```
+### Manual
+
+#### Prerequisites
+- **Go 1.25+** ([Download](https://go.dev/dl/))
+- **PostgreSQL 15+** ([Download](https://www.postgresql.org/download/))
+
+
+#### Clone Repository
+```bash
+git clone https://github.com/yourusername/myapp.git
+cd myapp
+```
+#### Login to PostgreSQL
+```bash
+sudo -u postgres psql
+```
+
+#### In psql shell:
+```sql
+CREATE DATABASE mydb;
+CREATE USER myuser WITH PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
+\q
+```
+#### Copy example config
+
+```bash
+cp .env.example .env
+```
+
+#### Install goose CLI and apply nigrations
+```bash
+go install github.com/pressly/goose/v3/cmd/goose@latest
+goose -dir sql/schema postgres "$DB_URL" up
+```
+
+#### Download Go modules, build and run
+```bash
+go mod download
+go run cmd/app/main.go
+```
 ---
 
-## UI Example
+## Usage
+
 <img width="1408" height="656" alt="image" src="https://github.com/user-attachments/assets/5d970378-61ee-4bcb-bc9b-665f4955ee7c" />
 
 
@@ -323,4 +369,7 @@ GET /workouts/{workout_id}
 ```
 **Protected** - Get details of a specific workout.
 
+## Contributing
+
+If you'd like to contribute, please fork the repo and open a pull request to the `main` branch.
 
